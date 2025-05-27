@@ -77,70 +77,178 @@ local classColors = {
 }
 -- Items to ignore when adding raids loot:
 local ignoredItems = {
-		[40752] = true,  -- Emblems Heroism
-		[40753] = true,  -- Emblems Valor
-		[45624] = true,  -- Emblems Conquest
-		[47241] = true,  -- Emblems Triumph
-		[49426] = true,  -- Emblems Frost
-		[36931] = true,  -- Ametrine
-		[36919] = true,  -- Cardinal Ruby
-		[36928] = true,  -- Dreadstone
-		[36934] = true,  -- Eye of Zul
-		[36922] = true,  -- King's Amber
-		[36925] = true,  -- Majestic Zircon
-		[34057] = true,  -- Abyss Crystal
+  -- Emblems (Wrath of the Lich King)
+  [40752] = true,  -- Emblem of Heroism
+  [40753] = true,  -- Emblem of Valor
+  [45624] = true,  -- Emblem of Conquest
+  [47241] = true,  -- Emblem of Triumph
+  [49426] = true,  -- Emblem of Frost
+  -- Emblems and Tokens (The Burning Crusade)
+  [29434] = true,  -- Badge of Justice
+  [29736] = true,  -- Arcane Tome
+  [29737] = true,  -- Firewing Signet
+  [29738] = true,  -- Fel Armament
+  [29739] = true,  -- Sunfury Signet
+  [29740] = true,  -- Mark of Sargeras
+  [29741] = true,  -- Fel Armament
+  -- High-end Gems
+  [36931] = true,  -- Ametrine
+  [36919] = true,  -- Cardinal Ruby
+  [36928] = true,  -- Dreadstone
+  [36934] = true,  -- Eye of Zul
+  [36922] = true,  -- King's Amber
+  [36925] = true,  -- Majestic Zircon
+  -- Enchanting Materials - Classic
+  [10940] = true,  -- Strange Dust
+  [10938] = true,  -- Lesser Magic Essence
+  [10939] = true,  -- Greater Magic Essence
+  [10978] = true,  -- Small Glimmering Shard
+  [10998] = true,  -- Lesser Astral Essence
+  [11082] = true,  -- Greater Astral Essence
+  [11083] = true,  -- Soul Dust
+  [11084] = true,  -- Large Glimmering Shard
+  [11134] = true,  -- Lesser Mystic Essence
+  [11135] = true,  -- Greater Mystic Essence
+  [11137] = true,  -- Vision Dust
+  [11138] = true,  -- Small Glowing Shard
+  [11139] = true,  -- Large Glowing Shard
+  [11174] = true,  -- Lesser Nether Essence
+  [11175] = true,  -- Greater Nether Essence
+  [11176] = true,  -- Dream Dust
+  [11177] = true,  -- Small Radiant Shard
+  [11178] = true,  -- Large Radiant Shard
+  [14343] = true,  -- Small Brilliant Shard
+  [14344] = true,  -- Large Brilliant Shard
+  [16202] = true,  -- Lesser Eternal Essence
+  [16203] = true,  -- Greater Eternal Essence
+  [16204] = true,  -- Illusion Dust
+  [20725] = true,  -- Nexus Crystal
+  -- Enchanting Materials - The Burning Crusade
+  [22445] = true,  -- Arcane Dust
+  [22446] = true,  -- Greater Planar Essence
+  [22447] = true,  -- Lesser Planar Essence
+  [22448] = true,  -- Small Prismatic Shard
+  [22449] = true,  -- Large Prismatic Shard
+  [22450] = true,  -- Void Crystal
+  -- Enchanting Materials - Wrath of the Lich King
+  [34052] = true,  -- Dream Shard
+  [34053] = true,  -- Small Dream Shard
+  [34054] = true,  -- Infinite Dust
+  [34055] = true,  -- Greater Cosmic Essence
+  [34056] = true,  -- Lesser Cosmic Essence
+  [34057] = true,  -- Abyss Crystal
 }
 -- List of bosses IDs to track:
 local bossListIDs = {
-		-- Naxxramas:
-	[15956] = "Anub'Rekhan",
-	[15953] = "Grand Widow Faerlina",
-	[15952] = "Maexxna",
-	[15954] = "Noth the Plaguebringer",
-	[15936] = "Heigan the Unclean",
-	[16011] = "Loatheb",
-	[16061] = "Instructor Razuvious",
-	[16060] = "Gothik the Harvester",
-	[16028] = "Patchwerk",
-	[15931] = "Grobbulus",
-	[15932] = "Gluth",
-	[15928] = "Thaddius",
-	[15989] = "Sapphiron",
-	[15990] = "Kel'Thuzad",
-	-- The Obsidian Sanctum:
-		[28860] = "Sartharion",
-		-- Eye of Eternity:
-		[28859] = "Malygos",
-		-- Archavon's Chamber:
-		[31125] = "Archavon the Stone Watcher",
-		[33993] = "Emalon the Storm Watcher",
-		[35013] = "Koralon the Flame Watcher",
-		[38433] = "Toravon the Ice Watcher",
-		-- Ulduar
-		[33113] = "Flame Leviathan",
-		[33118] = "Ignis the Furnace Master",
-		[33186] = "Razorscale",
-		[33293] = "XT-002 Deconstructor",
-		[32930] = "Kologarn",
-		[33515] = "Auriaya",
-		[33271] = "General Vezax",
-		[33288] = "Yogg-Saron",
-		-- Onyxias Lair:
-		[10184] = "Onyxia",
-		-- Trial of the Crusader:
-		[34797] = "Icehowl",
-		[34780] = "Lord Jaraxxus",
-		[34564] = "Anub'arak",
-		-- Icecrown Citadel:
-		[36612] = "Lord Marrowgar",
-		[36855] = "Lady Deathwhisper",
-		[37813] = "Deathbringer Saurfang",
-		[36626] = "Festergut",
-		[36627] = "Rotface",
-		[36678] = "Professor Putricide",
-		[37955] = "Blood-Queen Lana'thel",
-		[36853] = "Sindragosa",
-		[36597] = "The Lich King",
+  -- Karazhan (10 giocatori)
+  [16152] = "Attumen the Huntsman",
+  [16457] = "Maiden of Virtue",
+  [15687] = "Moroes",
+  [15691] = "The Curator",
+  [15688] = "Terestian Illhoof",
+  [16524] = "Shade of Aran",
+  [15689] = "Netherspite",
+  [15690] = "Prince Malchezaar",
+  [17225] = "Nightbane",
+  -- Gruul's Lair (25 giocatori)
+  [18831] = "High King Maulgar",
+  [19044] = "Gruul the Dragonkiller",
+  -- Magtheridon's Lair (25 giocatori)
+  [17257] = "Magtheridon",
+  -- Serpentshrine Cavern (25 giocatori)
+  [21216] = "Hydross the Unstable",
+  [21217] = "The Lurker Below",
+  [21215] = "Leotheras the Blind",
+  [21214] = "Fathom-Lord Karathress",
+  [21213] = "Morogrim Tidewalker",
+  [21212] = "Lady Vashj",
+  -- The Eye (Tempest Keep) (25 giocatori)
+  [19514] = "Al'ar",
+  [19516] = "Void Reaver",
+  [18805] = "High Astromancer Solarian",
+  [19622] = "Kael'thas Sunstrider",
+  -- Battle for Mount Hyjal (25 giocatori)
+  [17767] = "Rage Winterchill",
+  [17808] = "Anetheron",
+  [17888] = "Kaz'rogal",
+  [17842] = "Azgalor",
+  [17968] = "Archimonde",
+  -- Black Temple (25 giocatori)
+  [22887] = "High Warlord Naj'entus",
+  [22898] = "Supremus",
+  [22841] = "Shade of Akama",
+  [22871] = "Teron'khan",
+  [22948] = "Gurtogg Bloodboil",
+  [23420] = "Reliquary of Souls",
+  [22947] = "Mother Shahraz",
+  [22949] = "Illidari Council",
+  [22917] = "Illidan Stormrage",
+  -- Sunwell Plateau (25 giocatori)
+  [24850] = "Kalecgos",
+  [24882] = "Brutallus",
+  [25038] = "Felmyst",
+  [25165] = "Eredar Twins",
+  [25741] = "M'uru",
+  [25315] = "Kil'jaeden",
+  -- Zul'Aman (10 giocatori)
+  [23574] = "Nalorakk",
+  [23576] = "Jan'alai",
+  [23578] = "Akil'zon",
+  [23577] = "Halazzi",
+  [24239] = "Hex Lord Malacrass",
+  [23863] = "Zul'jin",
+  -- World Bosses
+  [18728] = "Doom Lord Kazzak",
+  [17711] = "Doomwalker",
+  -- Naxxramas:
+  [15956] = "Anub'Rekhan",
+  [15953] = "Grand Widow Faerlina",
+  [15952] = "Maexxna",
+  [15954] = "Noth the Plaguebringer",
+  [15936] = "Heigan the Unclean",
+  [16011] = "Loatheb",
+  [16061] = "Instructor Razuvious",
+  [16060] = "Gothik the Harvester",
+  [16028] = "Patchwerk",
+  [15931] = "Grobbulus",
+  [15932] = "Gluth",
+  [15928] = "Thaddius",
+  [15989] = "Sapphiron",
+  [15990] = "Kel'Thuzad",
+  -- The Obsidian Sanctum:
+  [28860] = "Sartharion",
+  -- Eye of Eternity:
+  [28859] = "Malygos",
+  -- Archavon's Chamber:
+  [31125] = "Archavon the Stone Watcher",
+  [33993] = "Emalon the Storm Watcher",
+  [35013] = "Koralon the Flame Watcher",
+  [38433] = "Toravon the Ice Watcher",
+  -- Ulduar
+  [33113] = "Flame Leviathan",
+  [33118] = "Ignis the Furnace Master",
+  [33186] = "Razorscale",
+  [33293] = "XT-002 Deconstructor",
+  [32930] = "Kologarn",
+  [33515] = "Auriaya",
+  [33271] = "General Vezax",
+  [33288] = "Yogg-Saron",
+  -- Onyxia's Lair:
+  [10184] = "Onyxia",
+  -- Trial of the Crusader:
+  [34797] = "Icehowl",
+  [34780] = "Lord Jaraxxus",
+  [34564] = "Anub'arak",
+  -- Icecrown Citadel:
+  [36612] = "Lord Marrowgar",
+  [36855] = "Lady Deathwhisper",
+  [37813] = "Deathbringer Saurfang",
+  [36626] = "Festergut",
+  [36627] = "Rotface",
+  [36678] = "Professor Putricide",
+  [37955] = "Blood-Queen Lana'thel",
+  [36853] = "Sindragosa",
+  [36597] = "The Lich King",
 }
 
 -- Raid Target Icons:
@@ -2194,6 +2302,336 @@ do
 			announced = false
 		end
 	end)
+end
+
+-- ==================== Raid Helper Reserves ==================== --
+do
+    addon.Reserves = {} -- Initialize the module table here
+    local Reserves = addon.Reserves -- Use a local variable for the module within this 'do' block
+
+    local reservesData = {}    -- normalizedName → { rawID = itemId, original = playerName, itemLink = nil, itemName = nil, itemIcon = nil }
+    local reserveListFrame = nil -- This will now point to the XML frame
+    local isReserveListFrameLoaded = false -- Flag for the XML frame's status
+
+    -- Helper for the "window" backdrop in 3.3.5a
+    local function ApplyWindowBackdrop(frame)
+        frame:SetBackdrop({
+            bgFile   = "Interface\\DialogFrame\\UI-DialogBox-Background",
+            edgeFile = "Interface\\DialogFrame\\UI-DialogBox-Border",
+            tile     = true,
+            tileSize = 32,
+            edgeSize = 32,
+            insets   = { left = 8, right = 8, top = 8, bottom = 8 },
+        })
+        frame:SetBackdropColor(0, 0, 0, 1)
+        frame:SetBackdropBorderColor(0.4, 0.4, 0.4, 1)
+    end
+
+    -- Refresh timer frame (already existing)
+    local KRT_RefreshTimerFrame = CreateFrame("Frame", "KRT_RefreshTimerFrame", UIParent)
+    KRT_RefreshTimerFrame:Hide()
+    KRT_RefreshTimerFrame:SetScript("OnEvent", function() end) -- Dummy OnEvent to make it functional
+
+    -------------------------------------------------------------------
+    -- OnLoad for the KRTReserveListFrame (Called from XML)
+    -------------------------------------------------------------------
+    function Reserves:OnReserveListLoad(frame) -- Function that will be called by XML
+        reserveListFrame = frame
+        isReserveListFrameLoaded = true
+        -- Apply window style to this XML frame as well
+        ApplyWindowBackdrop(frame)
+        frame:RegisterForDrag("LeftButton")
+        frame:SetScript("OnDragStart", frame.StartMoving)
+        frame:SetScript("OnDragStop", frame.StopMovingOrSizing)
+
+        -- Hook OnClick for buttons defined in XML (if they exist)
+        if _G["KRTReserveListFrameCloseButton"] then
+            _G["KRTReserveListFrameCloseButton"]:SetScript("OnClick", function() Reserves:CloseWindow() end)
+        end
+        if _G["KRTReserveListFrameClearButton"] then
+            _G["KRTReserveListFrameClearButton"]:SetScript("OnClick", function() Reserves:ClearReserves() end)
+        end
+    end
+
+    -------------------------------------------------------------------
+    -- CORE FUNCTIONS
+    -------------------------------------------------------------------
+
+    -- ParseCSV: collects itemId and playerName in reservesData
+    function Reserves:ParseCSV(csv)
+        wipe(reservesData) -- Use wipe to clear the table efficiently
+
+        local firstLine = true
+        for line in csv:gmatch("[^\r\n]+") do
+            line = line:trim()
+            if firstLine then
+                firstLine = false
+            else
+                local itemId, playerName, class, note, plus =
+                    line:match("^([^,]*),([^,]*),([^,]*),([^,]*),([^,]*)$")
+                itemId = tonumber(itemId)
+                if playerName and itemId then
+                    local normalized = playerName:lower():trim()
+                    if not reservesData[normalized] then
+                        reservesData[normalized] = {
+                            rawID    = itemId,
+                            original = playerName,
+                            itemLink = nil, -- Will be filled on demand
+                            itemName = nil,
+                            itemIcon = nil,
+                        }
+                    end
+                end
+            end
+        end
+
+        if not next(reservesData) then
+            addon:PrintWarning(L.WarnNoValidRows)
+        else
+            addon:PrintSuccess(L.SuccessReservesParsed:format(tostring(Utils.tableLen(reservesData))))
+        end
+    end
+
+    -- GetReserve: returns data for a player
+    function Reserves:GetReserve(playerName)
+        if not playerName then return nil end
+        return reservesData[playerName:lower():trim()]
+    end
+
+    -- QueryItemInfo: attempts to get item info and update reservesData
+    function Reserves:QueryItemInfo(itemId, normalizedPlayerName)
+        if not itemId then return end
+
+        local itemName, itemLink, itemRarity, itemLevel, itemMinLevel, itemType, itemSubType, itemStackCount, itemEquipLoc, itemTexture = GetItemInfo(itemId)
+
+        if itemName and itemLink and itemTexture then
+            if reservesData[normalizedPlayerName] then
+                reservesData[normalizedPlayerName].itemName = itemName
+                reservesData[normalizedPlayerName].itemLink = itemLink
+                reservesData[normalizedPlayerName].itemIcon = itemTexture
+            end
+            addon:PrintInfo(L.StrQueryingItemSuccess:format(itemLink))
+            return true
+        else
+            addon:PrintWarning(L.StrQueryingItemWarning:format(itemId))
+            GameTooltip:SetOwner(UIParent, "ANCHOR_NONE")
+            GameTooltip:SetHyperlink("item:" .. itemId)
+            GameTooltip:Hide()
+            return false
+        end
+    end
+
+    -- ClearReserves: Clears all loaded reserves
+    function Reserves:ClearReserves()
+        wipe(reservesData)
+        addon:PrintSuccess(L.StrReserveListCleared)
+        self:RefreshWindow()
+    end
+
+    -------------------------------------------------------------------
+    -- WINDOW MANAGEMENT
+    -------------------------------------------------------------------
+
+    -- ShowImportBox: creates the window to paste CSV (if an XML frame exists)
+    function Reserves:ShowImportBox()
+        local frame = _G["KRTImportWindow"] -- Assume this frame is defined in XML
+        if not frame then
+            addon:PrintError("KRTImportWindow not found in XML. Cannot show import window.")
+            return
+        end
+        -- If the editbox exists, clear it
+        if _G["KRTImportEditBox"] then
+            _G["KRTImportEditBox"]:SetText("")
+        end
+        frame:Show()
+    end
+
+    -- CloseWindow: closes the reserves window
+    function Reserves:CloseWindow()
+        if reserveListFrame then
+            reserveListFrame:Hide()
+        end
+        addon:Print("Reserves window closed.")
+    end
+
+    -- RefreshWindow: closes and reopens the window to update data
+    function Reserves:RefreshWindow()
+        if not isReserveListFrameLoaded or not reserveListFrame then
+            addon:PrintError("Reserve List UI not ready for refresh. Please try again.")
+            return
+        end
+
+        local existingFrame = reserveListFrame
+        if existingFrame and existingFrame:IsVisible() then
+            existingFrame:Hide()
+        end
+        self:ShowWindow()
+    end
+
+    -- ShowWindow: displays all reserves with links and icons
+    function Reserves:ShowWindow()
+        if not next(reservesData) then
+            addon:PrintWarning(L.StrNoReserveFound)
+            return
+        end
+
+        if not isReserveListFrameLoaded or not reserveListFrame then
+            addon:PrintError("Reserve List UI not fully loaded yet. Please try again in a moment.")
+            return
+        end
+
+        local frame = reserveListFrame
+        frame:Show()
+
+        local scrollFrame = frame.ScrollFrame or _G["KRTReserveListFrameScrollFrame"] -- Access scrollframe via global name
+        local content = scrollFrame and (scrollFrame.ScrollChild or _G["KRTReserveListFrameScrollChild"]) -- Access content via global name
+
+        if not scrollFrame or not content then
+            addon:PrintError("KRTReserveListFrame's ScrollFrame or its ScrollChild could not be found. This indicates a deeper XML or template issue.")
+            return
+        end
+
+        -- Clear existing content
+        for i, child in ipairs({content:GetChildren()}) do
+            if child and child.IsObjectType and child:IsObjectType("Frame") and child:GetName() and child:GetName():find("KRTReserveRow") then
+                child:Hide()
+                child:SetParent(UIParent) -- Dissociate for cleanup
+                child:ClearAllPoints()
+            end
+        end
+
+        local yOffset, rowHeight = 0, 34
+
+        local sortedReserves = {}
+        for normalized, info in pairs(reservesData) do
+            if not info.itemName or not info.itemLink or not info.itemIcon then
+                Reserves:QueryItemInfo(info.rawID, normalized) -- Call the function with self
+            end
+            tinsert(sortedReserves, info)
+        end
+        table.sort(sortedReserves, function(a, b)
+            return a.original:lower() < b.original:lower()
+        end)
+
+        for i, info in ipairs(sortedReserves) do
+            local itemId = info.rawID
+            local normalizedPlayerName = info.original:lower():trim()
+
+            local rowName = "KRTReserveRow" .. i
+            local row = _G[rowName]
+            if not row then
+                -- Create the row if it doesn't exist
+                row = CreateFrame("Frame", rowName, content)
+                row:SetSize(scrollFrame:GetWidth() - 25, rowHeight)
+                row:SetPoint("TOPLEFT", content, "TOPLEFT", 0, -yOffset)
+
+                -- Create icon, name, and player text only if the row is new
+                local icon = row:CreateTexture(rowName .. "Icon", "BACKGROUND")
+                icon:SetSize(32, 32)
+                icon:SetPoint("LEFT", row, "LEFT", 0, 0)
+                icon:EnableMouse(true)
+
+                local nameText = row:CreateFontString(rowName .. "NameText", "ARTWORK", "GameFontNormal")
+                nameText:SetPoint("LEFT", icon, "RIGHT", 8, 0)
+
+                local playerText = row:CreateFontString(rowName .. "PlayerText", "ARTWORK", "GameFontHighlightSmall")
+                playerText:SetPoint("RIGHT", row, "RIGHT", 0, 0)
+
+                -- Associate references to global names for future updates
+                _G[rowName .. "Icon"] = icon
+                _G[rowName .. "NameText"] = nameText
+                _G[rowName .. "PlayerText"] = playerText
+
+                -- Create a query button (initially hidden or visible depending on state)
+                local queryButton = CreateFrame("Button", rowName .. "QueryButton", row)
+                queryButton:SetSize(100, 20)
+                queryButton:SetPoint("LEFT", nameText, "RIGHT", 10, 0)
+                local queryButtonText = queryButton:CreateFontString(nil, "OVERLAY", "GameFontHighlightSmall")
+                queryButtonText:SetPoint("CENTER")
+                queryButtonText:SetJustifyH("LEFT")
+                queryButton:SetFontString(queryButtonText)
+                queryButton:SetText(L.BtnQueryItem)
+                _G[rowName .. "QueryButton"] = queryButton
+            else
+                -- Reuse the existing row and its components
+                row:SetParent(content)
+                row:Show()
+            end
+
+            -- Retrieve references to the row's components
+            local icon = _G[rowName .. "Icon"]
+            local nameText = _G[rowName .. "NameText"]
+            local playerText = _G[rowName .. "PlayerText"]
+            local queryButton = _G[rowName .. "QueryButton"]
+
+            playerText:SetText(info.original)
+
+            if info.itemLink and info.itemName and info.itemIcon then
+                -- Item info is available
+                icon:SetTexture(info.itemIcon)
+                nameText:SetText(info.itemLink)
+
+                -- Update scripts for standard tooltip
+                icon:SetScript("OnEnter", function(self)
+                    GameTooltip:SetOwner(self, "ANCHOR_RIGHT")
+                    GameTooltip:SetHyperlink(info.itemLink)
+                    GameTooltip:Show()
+                end)
+                icon:SetScript("OnLeave", function(self)
+                    GameTooltip:Hide()
+                end)
+                icon:SetScript("OnClick", nil) -- Remove click for query if item is available
+
+                if queryButton then queryButton:Hide() end
+            else
+                -- Item info not available
+                icon:SetTexture("Interface\\Icons\\INV_Misc_QuestionMark")
+                nameText:SetText(L.StrItemUnavailable:format(itemId))
+
+                -- Enable the query button and specific tooltips
+                if queryButton then
+                    queryButton:Show()
+                    queryButton:SetScript("OnEnter", function(self)
+                        GameTooltip:SetOwner(self, "ANCHOR_RIGHT")
+                        GameTooltip:AddLine(L.TooltipQueryItemHelp1, 1, 1, 1)
+                        GameTooltip:AddLine(L.TooltipQueryItemHelp2, 1, 0, 0)
+                        GameTooltip:Show()
+                    end)
+                    queryButton:SetScript("OnLeave", function(self)
+                        GameTooltip:Hide()
+                    end)
+                    queryButton:SetScript("OnClick", function(self, button)
+                        if button == "LeftButton" then
+                            local queriedSuccessfully = Reserves:QueryItemInfo(itemId, normalizedPlayerName) -- Call the function with self
+                            if queriedSuccessfully then
+                                addon:Print(L.StrQueryingItemSuccess:format(itemId))
+                            else
+                                addon:Print(L.StrQueryingItemInitiated:format(itemId))
+                                KRT_RefreshTimerFrame.timer = 0
+                                KRT_RefreshTimerFrame:SetScript("OnUpdate", function(self, elapsed)
+                                    self.timer = self.timer + elapsed
+                                    if self.timer >= 2 then
+                                        self:SetScript("OnUpdate", nil)
+                                        Reserves:RefreshWindow() -- Call the function with self
+                                    end
+                                end)
+                                KRT_RefreshTimerFrame:Show()
+                            end
+                        end
+                    end)
+                end
+
+                icon:SetScript("OnEnter", nil)
+                icon:SetScript("OnLeave", nil)
+                icon:SetScript("OnClick", nil)
+            end
+
+            yOffset = yOffset + rowHeight
+        end
+
+        content:SetHeight(yOffset)
+        scrollFrame:SetVerticalScrollPosition(0)
+    end
 end
 
 -- ==================== Configuration Frame ==================== --
