@@ -104,6 +104,26 @@ L.StrConfigMinimapButton        = "Show minimap button"
 L.StrConfigCountdownDuration    = "Countdown Duration"
 L.StrConfigAbout                = "Made with love by |cfff58cbaKader|r B\n|cffffffffhttps://github.com/bkader|r\nhttps://discord.gg/a8z5CyS3eW"
 
+-- ==================== Raid Helper Reserves ==================== --
+L.BtnClearReserve   = "Clear Reserve"
+L.BtnCloseWindow    = "Close Window"
+L.BtnQueryItem      = "Query Item"
+L.BtnOpenReserve    = "Open Reserves"
+L.StrNoReserveFound = "No reserves found."
+L.StrRaidReserves   = "Raid Reserves"
+L.StrImportReservesTitle = "Import Raid Reserves"
+L.StrImportReservesHint = "Paste your raid reserves CSV data below:"
+L.BtnLoad = "Load"
+L.ErrNoTextFound = "No text found in the import window."
+L.WarnNoValidRows = "No valid rows found in CSV (check header)."
+L.SuccessReservesParsed = "Reserves parsed: %s"
+L.StrItemUnavailable = "[Item ID %s unavailable]"
+L.TooltipQueryItemHelp1 = "Click to retrieve item information from the server."
+L.TooltipQueryItemHelp2 = "|cffff0000Warning: May cause a temporary disconnect!|r"
+L.StrQueryingItemInitiated = "Attempting to retrieve info for ItemID: %s. You might be disconnected!"
+L.StrQueryingItemSuccess = "Successfully retrieved item information for %s."
+L.StrReserveListCleared = "Reserve list cleared."
+
 -- ==================== Raid Warnings Frame ==================== --
 L.StrMessage            = "Message"
 L.StrWarningsHelp       = "Tips:"
@@ -239,16 +259,28 @@ L.ItemValues = {
 	[7] = "Artifact",
 }
 L.RaidZones = {
-	["The Eye of Eternity"]         = "The Eye of Eternity",
-	["The Obsidian Sanctum"]        = "The Obsidian Sanctum",
-	["Vault of Archavon"]           = "Vault of Archavon",
-	["Naxxramas"]                   = "Naxxramas",
-	["Ulduar"]                      = "Ulduar",
-	["Trial of the Crusader"]       = "Trial of the Crusader",
-	["Trial of the Grand Crusader"] = "Trial of the Grand Crusader",
-	["Onyxia's Lair"]               = "Onyxia's Lair",
-	["Icecrown Citadel"]            = "Icecrown Citadel",
-	["The Ruby Sanctum"]            = "The Ruby Sanctum",
+    -- The Burning Crusade
+    ["Karazhan"] = "Karazhan",
+    ["Gruul's Lair"] = "Gruul's Lair",
+    ["Magtheridon's Lair"] = "Magtheridon's Lair",
+    ["Serpentshrine Cavern"] = "Serpentshrine Cavern",
+    ["The Eye"] = "The Eye", -- Tempest Keep: The Eye
+    ["Battle for Mount Hyjal"] = "Battle for Mount Hyjal",
+    ["Black Temple"] = "Black Temple",
+    ["Sunwell Plateau"] = "Sunwell Plateau",
+    ["Zul'Aman"] = "Zul'Aman",
+
+    -- Wrath of the Lich King
+    ["Naxxramas"] = "Naxxramas",
+    ["The Obsidian Sanctum"] = "The Obsidian Sanctum",
+    ["The Eye of Eternity"] = "The Eye of Eternity",
+    ["Vault of Archavon"] = "Vault of Archavon",
+    ["Ulduar"] = "Ulduar",
+    ["Onyxia's Lair"] = "Onyxia's Lair", -- Nota: Onyxia è presente anche in Classic
+    ["Trial of the Crusader"] = "Trial of the Crusader",
+    ["Trial of the Grand Crusader"] = "Trial of the Grand Crusader", -- Già presente, lo mantengo
+    ["Icecrown Citadel"] = "Icecrown Citadel",
+    ["The Ruby Sanctum"] = "The Ruby Sanctum", -- Già presente, lo mantengo
 }
 -- The reason we are using these is because of the missing
 -- UNIT_DIED event once these bosses are dealt with.
