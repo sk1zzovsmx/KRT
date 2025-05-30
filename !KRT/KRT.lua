@@ -16,11 +16,12 @@ KRT_Spammer      = KRT_Spammer or {}
 KRT_CurrentRaid  = KRT_CurrentRaid or nil
 KRT_LastBoss     = KRT_LastBoss or  nil
 KRT_NextReset    = KRT_NextReset or  0
+KRT_SavedReserves = KRT_SavedReserves or {}
 
 -- AddOn main frames:
 local mainFrame = CreateFrame("Frame")
 local UIMaster, UIConfig, UISpammer, UIChanges, UIWarnings
-local UILogger, UILoggerItemBox
+local UILogger, UILoggerItemBox, UIReserve
 -- local UILoggerBossBox, UILoggerPlayerBox
 local _
 
@@ -30,8 +31,8 @@ local unitName = UnitName("player")
 local trader, winner
 local holder, banker, disenchanter
 local lootOpened      = false
-local rollTypes       = {mainspec=1, offspec=2, free=3, bank=4, disenchant=5, hold=6, dkp=7}
-local currentRollType = 3
+local rollTypes       = {mainspec=1, offspec=2, reserved=3, free=4, bank=5, disenchant=6, hold=7, dkp=8}
+local currentRollType = 4
 local currentRollItem = 0
 local fromInventory   = false
 local itemInfo        = {}
@@ -41,10 +42,11 @@ local itemCount       = 1
 local itemTraded      = 0
 local ItemExists, ItemIsSoulbound, GetItem
 local GetItemIndex, GetItemName, GetItemLink, GetItemTexture
-local lootTypesText = {L.BtnMS, L.BtnOS, L.BtnFree, L.BtnBank, L.BtnDisenchant, L.BtnHold}
+local lootTypesText = {L.BtnMS, L.BtnOS, L.BtnSR, L.BtnFree, L.BtnBank, L.BtnDisenchant, L.BtnHold}
 local lootTypesColored = {
 	GREEN_FONT_COLOR_CODE..L.BtnMS..FONT_COLOR_CODE_CLOSE,
 	LIGHTYELLOW_FONT_COLOR_CODE..L.BtnOS..FONT_COLOR_CODE_CLOSE,
+	"|cffa335ee"..L.BtnSR..FONT_COLOR_CODE_CLOSE,
 	NORMAL_FONT_COLOR_CODE..L.BtnFree..FONT_COLOR_CODE_CLOSE,
 	ORANGE_FONT_COLOR_CODE..L.BtnBank..FONT_COLOR_CODE_CLOSE,
 	RED_FONT_COLOR_CODE..L.BtnDisenchant..FONT_COLOR_CODE_CLOSE,
@@ -1613,6 +1615,7 @@ do
 		if not frame then return end
 		UIMaster = frame
 		frameName = frame:GetName()
+		
 		frame:RegisterForDrag("LeftButton")
 		frame:SetScript("OnUpdate", UpdateUIFrame)
 		frame:SetScript("OnHide", function()
@@ -1669,6 +1672,16 @@ do
 			end
 		end
 	end
+	
+	-- Button: Open List
+	function Master:BtnOpenReserves(btn)
+		addon.Reserves:ShowWindow()
+	end
+
+	-- Button: Import Reserve
+	function Master:BtnImportReserves(btn)
+		addon.Reserves:ShowImportBox()
+	end
 
 	-- Generic roll button:
 	local function AnnounceRoll(rollType, chatMsg)
@@ -1703,9 +1716,14 @@ do
 		return AnnounceRoll(2, "ChatRollOS")
 	end
 
+	-- Button: SR Roll
+	function Master:BtnSR(btn)
+		return AnnounceRoll(3, "ChatRollSR")
+	end
+
 	-- Button: Free Roll
 	function Master:BtnFree(btn)
-		return AnnounceRoll(3, "ChatRollFree")
+		return AnnounceRoll(4, "ChatRollFree")
 	end
 
 	-- Button: Countdown/Stop
@@ -1817,6 +1835,7 @@ do
 			_G[frameName.."SpamLootBtn"]:SetText(L.BtnSpamLoot)
 			_G[frameName.."MSBtn"]:SetText(L.BtnMS)
 			_G[frameName.."OSBtn"]:SetText(L.BtnOS)
+			_G[frameName.."SRBtn"]:SetText(L.BtnSR)
 			_G[frameName.."FreeBtn"]:SetText(L.BtnFree)
 			_G[frameName.."CountdownBtn"]:SetText(L.BtnCountdown)
 			_G[frameName.."AwardBtn"]:SetText(L.BtnAward)
@@ -1826,7 +1845,8 @@ do
 			_G[frameName.."BankBtn"]:SetText(L.BtnBank)
 			_G[frameName.."DisenchantBtn"]:SetText(L.BtnDisenchant)
 			_G[frameName.."Name"]:SetText(L.StrNoItemSelected)
-			_G[frameName.."RollsHeaderRoll"]:SetText(L.StrRoll)
+			_G[frameName.."OpenReservesBtn"]:SetText(L.BtnOpenReserves)
+			_G[frameName.."ImportReservesBtn"]:SetText(L.BtnImportReserves)
 		end
 		_G[frameName.."Title"]:SetText(format(titleString, MASTER_LOOTER))
 		_G[frameName.."ItemCount"]:SetScript("OnTextChanged", function(self)
@@ -1894,11 +1914,15 @@ do
 			Utils.enableDisable(_G[frameName.."SpamLootBtn"], lootCount >= 1)
 			Utils.enableDisable(_G[frameName.."MSBtn"], lootCount >= 1)
 			Utils.enableDisable(_G[frameName.."OSBtn"], lootCount >= 1)
+			Utils.enableDisable(_G[frameName.."SRBtn"], lootCount >= 1)
 			Utils.enableDisable(_G[frameName.."FreeBtn"], lootCount >= 1)
 			Utils.enableDisable(_G[frameName.."HoldBtn"], lootCount >= 1)
 			Utils.enableDisable(_G[frameName.."BankBtn"], lootCount >= 1)
 			Utils.enableDisable(_G[frameName.."DisenchantBtn"], lootCount >= 1)
 			Utils.enableDisable(_G[frameName.."AwardBtn"], (lootCount >= 1 and rollsCount >= 1))
+			Utils.enableDisable(_G[frameName.."OpenReservesBtn"], addon.Reserves:HasData())
+			Utils.enableDisable(_G[frameName.."ImportReservesBtn"], true)
+
 
 			local rollType, record, canRoll, rolled = addon:RollStatus()
 			Utils.enableDisable(_G[frameName.."RollBtn"], record and canRoll and rolled == false)
@@ -2210,7 +2234,7 @@ do
 		-- Prepare initial output and whisper:
 		local output, whisper
 		local keep = true
-		if rollType <= 3 and addon.options.announceOnWin then
+		if rollType <= 4 and addon.options.announceOnWin then
 			output = L.ChatAward:format(playerName, itemLink)
 			keep = false
 		elseif rollType == rollTypes.hold and addon.options.announceOnHold then
@@ -2306,369 +2330,369 @@ end
 
 -- ==================== Raid Helper Reserves ==================== --
 do
-    addon.Reserves = {} -- Initialize the module table here
-    local Reserves = addon.Reserves -- Use a local variable for the module within this 'do' block
+    addon.Reserves = {}
+    local Reserves = addon.Reserves
 
-    local reservesData = {}    -- normalizedName → { rawID = itemId, original = playerName, itemLink = nil, itemName = nil, itemIcon = nil }
-    local reserveListFrame = nil -- This will now point to the XML frame
-    local isReserveListFrameLoaded = false -- Flag for the XML frame's status
+    local reservesData        = {}
+    local reserveListFrame    = nil
+    local scrollFrame, scrollChild = nil, nil
+    local pendingItemInfo     = {}
+    local reserveItemRows     = {}
+    local rowsByItemID        = {}
 
-	local pendingItemInfo = {} -- A table to keep track of items awaiting info
+    local function FlattenReserves(data)
+        local out = {}
+        for _, playerEntry in pairs(data) do
+            for _, r in ipairs(playerEntry.reserves) do
+                tinsert(out, {
+                    player   = playerEntry.original,
+                    rawID    = r.rawID,
+                    itemName = r.itemName,
+                    itemLink = r.itemLink,
+                    itemIcon = r.itemIcon,
+                    quantity = r.quantity,
+                })
+            end
+        end
+        return out
+    end
 
-    -- Helper for the "window" backdrop in 3.3.5a
-    local function ApplyWindowBackdrop(frame)
-        frame:SetBackdrop({
-            bgFile   = "Interface\\DialogFrame\\UI-DialogBox-Background",
-            edgeFile = "Interface\\DialogFrame\\UI-DialogBox-Border",
-            tile     = true,
-            tileSize = 32,
-            edgeSize = 32,
-            insets   = { left = 8, right = 8, top = 8, bottom = 8 },
-        })
-        frame:SetBackdropColor(0, 0, 0, 1)
-        frame:SetBackdropBorderColor(0.4, 0.4, 0.4, 1)
-    end
+    local function MakeReserveRow(parent, info, yOffset, index)
+        local row = CreateFrame("Frame", nil, parent)
+        row:SetSize(320, 34)
+        row:SetPoint("TOPLEFT", parent, "TOPLEFT", 0, -yOffset)
+        row._rawID = info.rawID
 
-    -- Refresh timer frame (already existing)
-    local KRT_RefreshTimerFrame = CreateFrame("Frame", "KRT_RefreshTimerFrame", UIParent)
-    KRT_RefreshTimerFrame:Hide()
+        row.bg = row:CreateTexture(nil, "BACKGROUND")
+        row.bg:SetAllPoints(row)
+        if (index % 2) == 0 then
+            row.bg:SetTexture(0.1, 0.1, 0.1, 0.3)
+        else
+            row.bg:SetTexture(0, 0, 0, 0)
+        end
 
-    -------------------------------------------------------------------
-    -- OnLoad for the KRTReserveListFrame (Called from XML)
-    -------------------------------------------------------------------
-    function Reserves:OnReserveListLoad(frame)
-        reserveListFrame = frame
-        isReserveListFrameLoaded = true
-        -- Apply window style to this XML frame as well
-        ApplyWindowBackdrop(frame)
-        frame:RegisterForDrag("LeftButton")
-        frame:SetScript("OnDragStart", frame.StartMoving)
-        frame:SetScript("OnDragStop", frame.StopMovingOrSizing)
+        row.icon = row:CreateTexture(nil, "ARTWORK")
+        row.icon:SetSize(32, 32)
+        row.icon:SetPoint("LEFT", row, "LEFT", 0, 0)
 
-        -- Hook OnClick for buttons defined in XML (if they exist)
-        if _G["KRTReserveListFrameCloseButton"] then
-            _G["KRTReserveListFrameCloseButton"]:SetScript("OnClick", function() Reserves:CloseWindow() end)
-        end
-        if _G["KRTReserveListFrameClearButton"] then
-            _G["KRTReserveListFrameClearButton"]:SetScript("OnClick", function() Reserves:ClearReserves() end)
-        end
+        row.iconBtn = CreateFrame("Button", nil, row)
+        row.iconBtn:SetAllPoints(row.icon)
 
-        -- INSERIRE QUI: Registra l'evento GET_ITEM_INFO_RECEIVED all'OnLoad del frame
-        KRT_RefreshTimerFrame:RegisterEvent("GET_ITEM_INFO_RECEIVED")
-        KRT_RefreshTimerFrame:SetScript("OnEvent", function(self, event, ...)
-            if event == "GET_ITEM_INFO_RECEIVED" then
-                local itemId = select(1, ...)
-                local normalizedPlayerName = pendingItemInfo[itemId] -- Recupera il nome normalizzato
-                if normalizedPlayerName then
-                    -- L'informazione per questo item è arrivata
-                    local itemName, itemLink, itemRarity, itemLevel, itemMinLevel, itemType, itemSubType, itemStackCount, itemEquipLoc, itemTexture, itemSellPrice = GetItemInfo(itemId)
-                    if itemName then -- Ricontrolla per sicurezza
-                        Reserves:UpdateReserveItemData(itemId, itemName, itemLink, itemRarity, itemLevel, itemMinLevel, itemType, itemSubType, itemStackCount, itemEquipLoc, itemTexture, itemSellPrice)
-                        -- Rimuovi l'item dalla lista degli item in attesa
-                        pendingItemInfo[itemId] = nil
-                        Reserves:RefreshWindow() -- Rinfresca la finestra dopo aver ottenuto l'info
+        row.nameText = row:CreateFontString(nil, "OVERLAY", "GameFontNormal")
+        row.nameText:SetPoint("LEFT", row.icon, "RIGHT", 8, 0)
+
+        row.playerText = row:CreateFontString(nil, "OVERLAY", "GameFontHighlightSmall")
+        row.playerText:SetPoint("RIGHT", row, "RIGHT", -4, 0)
+
+        row.quantityText = row:CreateFontString(nil, "OVERLAY", "GameFontNormalSmall")
+        row.quantityText:SetPoint("BOTTOMLEFT", row.icon, "BOTTOMLEFT", 0, 0)
+        row.quantityText:SetFont("Fonts\\FRIZQT__.TTF", 10, "OUTLINE")
+        row.quantityText:SetTextColor(1, 1, 1)
+
+        row.playerText:SetText(info.player or "")
+        if info.quantity and info.quantity > 1 then
+            row.quantityText:SetText(info.quantity .. "x")
+            row.quantityText:Show()
+        else
+            row.quantityText:Hide()
+        end
+
+        if info.itemLink and info.itemIcon then
+            row.nameText:SetText(info.itemLink)
+            row.icon:SetTexture(info.itemIcon)
+            row.iconBtn:SetScript("OnEnter", function()
+                GameTooltip:SetOwner(row.iconBtn, "ANCHOR_RIGHT")
+                GameTooltip:SetHyperlink(info.itemLink)
+                GameTooltip:Show()
+            end)
+            row.iconBtn:SetScript("OnLeave", function()
+                GameTooltip:Hide()
+            end)
+        elseif info.itemName then
+            row.nameText:SetText(info.itemName)
+            row.icon:SetTexture("Interface\\Icons\\INV_Misc_QuestionMark")
+            row.iconBtn:SetScript("OnEnter", function()
+                GameTooltip:SetOwner(row.iconBtn, "ANCHOR_RIGHT")
+                GameTooltip:SetText("Item ID: " .. info.rawID, 1, 1, 1)
+                GameTooltip:Show()
+            end)
+            row.iconBtn:SetScript("OnLeave", function()
+                GameTooltip:Hide()
+            end)
+        else
+            row.nameText:SetText("[Item " .. info.rawID .. " not yet loaded]")
+            row.icon:SetTexture("Interface\\Icons\\INV_Misc_QuestionMark")
+            row.iconBtn:SetScript("OnEnter", function()
+                GameTooltip:SetOwner(row.iconBtn, "ANCHOR_RIGHT")
+                GameTooltip:SetText("Item ID: " .. info.rawID .. "\n(Query server to load details)", 1, 1, 1)
+                GameTooltip:Show()
+            end)
+            row.iconBtn:SetScript("OnLeave", function()
+                GameTooltip:Hide()
+            end)
+        end
+
+        row:Show()
+
+        rowsByItemID[info.rawID] = rowsByItemID[info.rawID] or {}
+        tinsert(rowsByItemID[info.rawID], row)
+
+        return row
+    end
+
+    function Reserves:ShowImportBox()
+        local frame = _G["KRTImportWindow"]
+        if not frame then
+            addon:PrintError("KRTImportWindow not found.")
+            return
+        end
+        frame:Show()
+        if _G["KRTImportEditBox"] then
+            _G["KRTImportEditBox"]:SetText("")
+        end
+    end
+
+    function Reserves:ShowWindow()
+        if not reserveListFrame then
+            addon:PrintError("Reserve List frame not available.")
+            return
+        end
+        reserveListFrame:Show()
+    end
+
+    function Reserves:Save()
+        KRT_SavedReserves = reservesData
+    end
+
+    function Reserves:Load()
+        if KRT_SavedReserves then
+            reservesData = KRT_SavedReserves
+        end
+    end
+
+    function Reserves:ResetSaved()
+        KRT_SavedReserves = nil
+        wipe(reservesData)
+        self:RefreshWindow()
+        self:CloseWindow()
+        addon:PrintSuccess("Reserve list cleared.")
+    end
+
+    function Reserves:HasData()
+        return next(reservesData) ~= nil
+    end
+
+    function Reserves:GetReserve(playerName)
+        return reservesData[playerName:lower():trim()]
+    end
+
+    function Reserves:GetAllReserves()
+        return reservesData
+    end
+
+    function Reserves:UpdateReserveItemData(itemId, itemName, itemLink, itemIcon)
+        for _, playerEntry in pairs(reservesData) do
+            for _, r in ipairs(playerEntry.reserves) do
+                if r.rawID == itemId then
+                    r.itemName = itemName
+                    r.itemLink = itemLink
+                    r.itemIcon = itemIcon
+                end
+            end
+        end
+
+        local rows = rowsByItemID[itemId]
+        if rows then
+            for _, row in ipairs(rows) do
+                local cached = nil
+                for _, playerEntry in pairs(reservesData) do
+                    for _, r in ipairs(playerEntry.reserves) do
+                        if r.rawID == itemId then
+                            cached = r
+                            break
+                        end
+                    end
+                    if cached then break end
+                end
+                if not cached then
+                    return
+                end
+
+                if cached.itemLink and cached.itemIcon then
+                    row.nameText:SetText(cached.itemLink)
+                    row.icon:SetTexture(cached.itemIcon)
+                    row.iconBtn:SetScript("OnEnter", function()
+                        GameTooltip:SetOwner(row.iconBtn, "ANCHOR_RIGHT")
+                        GameTooltip:SetHyperlink(cached.itemLink)
+                        GameTooltip:Show()
+                    end)
+                    row.iconBtn:SetScript("OnLeave", function()
+                        GameTooltip:Hide()
+                    end)
+
+                elseif cached.itemName then
+                    row.nameText:SetText(cached.itemName)
+                    row.icon:SetTexture("Interface\\Icons\\INV_Misc_QuestionMark")
+                    row.iconBtn:SetScript("OnEnter", function()
+                        GameTooltip:SetOwner(row.iconBtn, "ANCHOR_RIGHT")
+                        GameTooltip:SetText("Item ID: " .. cached.rawID, 1, 1, 1)
+                        GameTooltip:Show()
+                    end)
+                    row.iconBtn:SetScript("OnLeave", function()
+                        GameTooltip:Hide()
+                    end)
+                end
+            end
+        end
+    end
+
+    function Reserves:QueryItemInfo(itemId)
+        if not itemId then return end
+
+        local itemName, itemLink, _, _, _, _, _, _, _, itemTexture = GetItemInfo(itemId)
+
+        if itemName and itemLink and itemTexture then
+            self:UpdateReserveItemData(itemId, itemName, itemLink, itemTexture)
+            return true
+        else
+            GameTooltip:SetOwner(UIParent, "ANCHOR_NONE")
+            GameTooltip:SetHyperlink("item:" .. itemId)
+            GameTooltip:Hide()
+            return false
+        end
+    end
+
+    function Reserves:CloseWindow()
+        if reserveListFrame then
+            reserveListFrame:Hide()
+        end
+    end
+
+    function Reserves:ParseCSV(csv)
+        wipe(reservesData)
+        local firstLine = true
+        for line in csv:gmatch("[^\r\n]+") do
+            line = line:trim()
+            if firstLine then
+                firstLine = false
+            else
+                local itemId_str, playerName = line:match("^([^,]*),([^,]*)")
+                local itemId = tonumber(itemId_str)
+                if playerName and itemId then
+                    local normalized = playerName:lower():trim()
+                    reservesData[normalized] = reservesData[normalized] or {
+                        original = playerName,
+                        reserves = {}
+                    }
+                    local found = false
+                    for _, r in ipairs(reservesData[normalized].reserves) do
+                        if r.rawID == itemId then
+                            r.quantity = (r.quantity or 1) + 1
+                            found = true
+                            break
+                        end
+                    end
+                    if not found then
+                        tinsert(reservesData[normalized].reserves, {
+                            rawID    = itemId,
+                            itemLink = nil,
+                            itemName = nil,
+                            itemIcon = nil,
+                            quantity = 1,
+                        })
                     end
                 end
             end
-            -- NON INSERIRE QUI ALTRI EVENTI SE IL FRAME NON DEVE GESTIRLI.
-            -- Se KRT_RefreshTimerFrame è usato solo per questo e l'OnUpdate del timer, è OK.
+        end
+
+        self:RefreshWindow()
+        self:Save()
+    end
+
+    function Reserves:QueryMissingItems()
+        local queriedCount = 0
+        for _, playerEntry in pairs(reservesData) do
+            for _, r in ipairs(playerEntry.reserves) do
+                if not r.itemLink or not r.itemIcon then
+                    if self:QueryItemInfo(r.rawID) then
+                    else
+                        queriedCount = queriedCount + 1
+                    end
+                end
+            end
+        end
+        if queriedCount > 0 then
+            addon:Print("Requested info for " .. queriedCount .. " missing items.")
+        else
+            addon:Print("All item infos are available.")
+        end
+    end
+
+    function Reserves:OnReserveListLoad(frame)
+        reserveListFrame = frame
+
+        frame:RegisterForDrag("LeftButton")
+        frame:SetScript("OnDragStart", frame.StartMoving)
+        frame:SetScript("OnDragStop", frame.StopMovingOrSizing)
+
+        scrollFrame = reserveListFrame.ScrollFrame or _G["KRTReserveListFrameScrollFrame"]
+        scrollChild = (scrollFrame and scrollFrame.ScrollChild) or _G["KRTReserveListFrameScrollChild"]
+
+        local buttonHandlers = {
+            CloseButton = "CloseWindow",
+            ClearButton = "ResetSaved",
+            QueryButton = "QueryMissingItems",
+        }
+        for suffix, method in pairs(buttonHandlers) do
+            local btn = _G["KRTReserveListFrame" .. suffix]
+            if btn and self[method] then
+                btn:SetScript("OnClick", function() self[method](self) end)
+            end
+        end
+
+        local refreshFrame = CreateFrame("Frame")
+        refreshFrame:RegisterEvent("GET_ITEM_INFO_RECEIVED")
+        refreshFrame:SetScript("OnEvent", function(_, _, itemId)
+            if pendingItemInfo[itemId] then
+                local itemName, itemLink, _, _, _, _, _, _, _, itemTexture = GetItemInfo(itemId)
+                if itemName then
+                    self:UpdateReserveItemData(itemId, itemName, itemLink, itemTexture)
+                    pendingItemInfo[itemId] = nil
+                end
+            end
+        end)
+    end
+
+    function Reserves:RefreshWindow()
+        if not reserveListFrame or not scrollChild then
+            return
+        end
+
+        for _, row in ipairs(reserveItemRows) do
+            row:Hide()
+            row:SetParent(nil)
+        end
+        wipe(reserveItemRows)
+        wipe(rowsByItemID)
+
+        local all = FlattenReserves(reservesData)
+        table.sort(all, function(a, b)
+            if a.rawID ~= b.rawID then
+                return a.rawID < b.rawID
+            end
+            return a.player:lower() < b.player:lower()
         end)
 
+        local yOffset, rowHeight = 0, 34
+        for i, info in ipairs(all) do
+            local row = MakeReserveRow(scrollChild, info, yOffset, i)
+            tinsert(reserveItemRows, row)
+            yOffset = yOffset + rowHeight
+        end
+
+        scrollChild:SetHeight(yOffset)
+        scrollFrame:SetVerticalScroll(0)
     end
-
-    -------------------------------------------------------------------
-    -- CORE FUNCTIONS
-    -------------------------------------------------------------------
-
-    -- ParseCSV: collects itemId and playerName in reservesData
-    function Reserves:ParseCSV(csv)
-        wipe(reservesData) -- Use wipe to clear the table efficiently
-
-        local firstLine = true
-        for line in csv:gmatch("[^\r\n]+") do
-            line = line:trim()
-            if firstLine then
-                firstLine = false
-            else
-                local itemId, playerName, class, note, plus =
-                    line:match("^([^,]*),([^,]*),([^,]*),([^,]*),([^,]*)$")
-                itemId = tonumber(itemId)
-                if playerName and itemId then
-                    local normalized = playerName:lower():trim()
-                    if not reservesData[normalized] then
-                        reservesData[normalized] = {
-                            rawID    = itemId,
-                            original = playerName,
-                            itemLink = nil, -- Will be filled on demand
-                            itemName = nil,
-                            itemIcon = nil,
-                        }
-                    end
-                end
-            end
-        end
-
-        if not next(reservesData) then
-            addon:PrintWarning(L.WarnNoValidRows)
-        else
-            addon:PrintSuccess(L.SuccessReservesParsed:format(tostring(Utils.tableLen(reservesData))))
-        end
-    end
-
-    -- GetReserve: returns data for a player
-    function Reserves:GetReserve(playerName)
-        if not playerName then return nil end
-        return reservesData[playerName:lower():trim()]
-    end
-
-    -- QueryItemInfo: attempts to get item info and update reservesData
-    function Reserves:QueryItemInfo(itemId, normalizedPlayerName)
-        if not itemId then return end
-
-        local itemName, itemLink, itemRarity, itemLevel, itemMinLevel, itemType, itemSubType, itemStackCount, itemEquipLoc, itemTexture = GetItemInfo(itemId)
-
-        if itemName and itemLink and itemTexture then
-            if reservesData[normalizedPlayerName] then
-                reservesData[normalizedPlayerName].itemName = itemName
-                reservesData[normalizedPlayerName].itemLink = itemLink
-                reservesData[normalizedPlayerName].itemIcon = itemTexture
-            end
-            addon:PrintInfo(L.StrQueryingItemSuccess:format(itemLink))
-            return true
-        else
-            -- addon:PrintWarning(L.StrQueryingItemWarning:format(itemId)) -- Rimuovi o commenta questa riga
-            GameTooltip:SetOwner(UIParent, "ANCHOR_NONE")
-            GameTooltip:SetHyperlink("item:" .. itemId)
-            GameTooltip:Hide()
-
-            pendingItemInfo[itemId] = normalizedPlayerName -- Memorizza sia l'ID che il nome normalizzato
-
-            -- Registra l'evento una volta sola all'OnLoad del modulo Reserves, non qui dentro
-            -- if not KRT_RefreshTimerFrame:IsEventRegistered("GET_ITEM_INFO_RECEIVED") then
-            --     KRT_RefreshTimerFrame:RegisterEvent("GET_ITEM_INFO_RECEIVED")
-            -- end
-
-            return false
-        end
-    end
-
-    -- ClearReserves: Clears all loaded reserves
-    function Reserves:ClearReserves()
-        wipe(reservesData)
-        addon:PrintSuccess(L.StrReserveListCleared)
-        self:RefreshWindow()
-    end
-
-    -- INSERIRE QUI: La nuova funzione per gestire l'aggiornamento dei dati e dell'UI
-    function Reserves:UpdateReserveItemData(itemId, itemName, itemLink, itemRarity, itemLevel, itemMinLevel, itemType, itemSubType, itemStackCount, itemEquipLoc, itemTexture, itemSellPrice)
-        -- Update the reservesData table with the item information
-        for normalized, data in pairs(reservesData) do -- Usa 'pairs' perché 'reservesData' è indicizzata da nomi normalizzati
-            if data.rawID == itemId then
-                data.itemName = itemName
-                data.itemLink = itemLink
-                data.itemIcon = itemTexture
-                -- Aggiorna tutti gli altri campi necessari se li vuoi conservare
-                break
-            end
-        end
-        -- L'aggiornamento dell'interfaccia utente è gestito dalla chiamata a RefreshWindow nell'OnEvent
-    end
-
-    -------------------------------------------------------------------
-    -- WINDOW MANAGEMENT
-    -------------------------------------------------------------------
-
-    -- ShowImportBox: creates the window to paste CSV (if an XML frame exists)
-    function Reserves:ShowImportBox()
-        local frame = _G["KRTImportWindow"] -- Assume this frame is defined in XML
-        if not frame then
-            addon:PrintError("KRTImportWindow not found in XML. Cannot show import window.")
-            return
-        end
-        -- If the editbox exists, clear it
-        if _G["KRTImportEditBox"] then
-            _G["KRTImportEditBox"]:SetText("")
-        end
-        frame:Show()
-    end
-
-    -- CloseWindow: closes the reserves window
-    function Reserves:CloseWindow()
-        if reserveListFrame then
-            reserveListFrame:Hide()
-        end
-        addon:Print("Reserves window closed.")
-    end
-
-    -- RefreshWindow: closes and reopens the window to update data
-    function Reserves:RefreshWindow()
-        if not isReserveListFrameLoaded or not reserveListFrame then
-            addon:PrintError("Reserve List UI not ready for refresh. Please try again.")
-            return
-        end
-
-        local existingFrame = reserveListFrame
-        if existingFrame and existingFrame:IsVisible() then
-            existingFrame:Hide()
-        end
-        self:ShowWindow()
-    end
-
-    -- ShowWindow: displays all reserves with links and icons
-    function Reserves:ShowWindow()
-        if not next(reservesData) then
-            addon:PrintWarning(L.StrNoReserveFound)
-            return
-        end
-
-        if not isReserveListFrameLoaded or not reserveListFrame then
-            addon:PrintError("Reserve List UI not fully loaded yet. Please try again in a moment.")
-            return
-        end
-
-        local frame = reserveListFrame
-        frame:Show()
-
-        local scrollFrame = frame.ScrollFrame or _G["KRTReserveListFrameScrollFrame"] -- Access scrollframe via global name
-        local content = scrollFrame and (scrollFrame.ScrollChild or _G["KRTReserveListFrameScrollChild"]) -- Access content via global name
-
-        if not scrollFrame or not content then
-            addon:PrintError("KRTReserveListFrame's ScrollFrame or its ScrollChild could not be found. This indicates a deeper XML or template issue.")
-            return
-        end
-
-        -- Clear existing content
-        for i, child in ipairs({content:GetChildren()}) do
-            if child and child.IsObjectType and child:IsObjectType("Frame") and child:GetName() and child:GetName():find("KRTReserveRow") then
-                child:Hide()
-                child:SetParent(UIParent) -- Dissociate for cleanup
-                child:ClearAllPoints()
-            end
-        end
-
-        local yOffset, rowHeight = 0, 34
-
-        local sortedReserves = {}
-        for normalized, info in pairs(reservesData) do
-            if not info.itemName or not info.itemLink or not info.itemIcon then
-                Reserves:QueryItemInfo(info.rawID, normalized) -- Call the function with self
-            end
-            tinsert(sortedReserves, info)
-        end
-        table.sort(sortedReserves, function(a, b)
-            return a.original:lower() < b.original:lower()
-        end)
-
-        for i, info in ipairs(sortedReserves) do
-            local itemId = info.rawID
-            local normalizedPlayerName = info.original:lower():trim()
-
-            -- Questa chiamata iniziale è CORRETTA per avviare la query
-            if not info.itemName or not info.itemLink or not info.itemIcon then
-                Reserves:QueryItemInfo(info.rawID, normalized)
-            end
-
-            local rowName = "KRTReserveRow" .. i
-            local row = _G[rowName]
-            if not row then
-                -- Creazione della riga (codice omesso per brevità, ma mantenuto)
-                local icon = row:CreateTexture(rowName .. "Icon", "BACKGROUND")
-                icon:SetSize(32, 32)
-                icon:SetPoint("LEFT", row, "LEFT", 0, 0)
-                icon:EnableMouse(true)
-
-                local nameText = row:CreateFontString(rowName .. "NameText", "ARTWORK", "GameFontNormal")
-                nameText:SetPoint("LEFT", icon, "RIGHT", 8, 0)
-
-                local playerText = row:CreateFontString(rowName .. "PlayerText", "ARTWORK", "GameFontHighlightSmall")
-                playerText:SetPoint("RIGHT", row, "RIGHT", 0, 0)
-
-                _G[rowName .. "Icon"] = icon
-                _G[rowName .. "NameText"] = nameText
-                _G[rowName .. "PlayerText"] = playerText
-
-                local queryButton = CreateFrame("Button", rowName .. "QueryButton", row)
-                queryButton:SetSize(100, 20)
-                queryButton:SetPoint("LEFT", nameText, "RIGHT", 10, 0)
-                local queryButtonText = queryButton:CreateFontString(nil, "OVERLAY", "GameFontHighlightSmall")
-                queryButtonText:SetPoint("CENTER")
-                queryButtonText:SetJustifyH("LEFT")
-                queryButton:SetFontString(queryButtonText)
-                queryButton:SetText(L.BtnQueryItem)
-                _G[rowName .. "QueryButton"] = queryButton
-            else
-                row:SetParent(content)
-                row:Show()
-            end
-
-            local icon = _G[rowName .. "Icon"]
-            local nameText = _G[rowName .. "NameText"]
-            local playerText = _G[rowName .. "PlayerText"]
-            local queryButton = _G[rowName .. "QueryButton"]
-
-            playerText:SetText(info.original)
-
-            if info.itemLink and info.itemName and info.itemIcon then
-                -- Item info is available
-                icon:SetTexture(info.itemIcon)
-                nameText:SetText(info.itemLink)
-
-                icon:SetScript("OnEnter", function(self)
-                    GameTooltip:SetOwner(self, "ANCHOR_RIGHT")
-                    GameTooltip:SetHyperlink(info.itemLink)
-                    GameTooltip:Show()
-                end)
-                icon:SetScript("OnLeave", function(self)
-                    GameTooltip:Hide()
-                end)
-                icon:SetScript("OnClick", nil)
-
-                if queryButton then queryButton:Hide() end
-            else
-                -- Item info not available
-                icon:SetTexture("Interface\\Icons\\INV_Misc_QuestionMark")
-                nameText:SetText(L.StrItemUnavailable:format(itemId))
-
-                if queryButton then
-                    queryButton:Show()
-                    queryButton:SetScript("OnEnter", function(self)
-                        GameTooltip:SetOwner(self, "ANCHOR_RIGHT")
-                        GameTooltip:AddLine(L.TooltipQueryItemHelp1, 1, 1, 1)
-                        GameTooltip:AddLine(L.TooltipQueryItemHelp2, 1, 0, 0)
-                        GameTooltip:Show()
-                    end)
-                    queryButton:SetScript("OnLeave", function(self)
-                        GameTooltip:Hide()
-                    end)
-                    queryButton:SetScript("OnClick", function(self, button)
-                        if button == "LeftButton" then
-                            Reserves:QueryItemInfo(itemId, normalizedPlayerName) -- Questa è la chiamata OK
-                            -- Rimuovi COMPLETAMENTE il seguente blocco di codice:
-                            -- if not queriedSuccessfully then
-                            --     addon:Print(L.StrQueryingItemInitiated:format(itemId))
-                            --     KRT_RefreshTimerFrame.timer = 0
-                            --     KRT_RefreshTimerFrame:SetScript("OnUpdate", function(self, elapsed)
-                            --         self.timer = self.timer + elapsed
-                            --         if self.timer >= 2 then
-                            --             self:SetScript("OnUpdate", nil)
-                            --             Reserves:RefreshWindow()
-                            --         end
-                            --     end)
-                            --     KRT_RefreshTimerFrame:Show()
-                            -- end
-                        end
-                    end)
-                end
-                icon:SetScript("OnEnter", nil)
-                icon:SetScript("OnLeave", nil)
-                icon:SetScript("OnClick", nil)
-            end
-            yOffset = yOffset + rowHeight
-        end
-
-        content:SetHeight(yOffset)
-        scrollFrame:SetVerticalScrollPosition(0)
-    end
 end
 
 -- ==================== Configuration Frame ==================== --
@@ -3906,7 +3930,7 @@ do
 			OnHide = function(self) self.itemId = nil end,
 			OnAccept = function(self)
 				local rollType = self.editBox:GetNumber()
-				if rollType > 0 and rollType <= 7 then
+				if rollType > 0 and rollType <= 8 then
 					addon:Log(self.itemId, nil, rollType)
 					addon.Logger.Loot:Fetch()
 				end
@@ -5210,7 +5234,8 @@ do
 	local cmdChanges  = {"ms", "changes", "mschanges"}
 	local cmdWarnings = {"warning", "warnings", "warn", "rw"}
 	local cmdLog      = {"log", "logger", "history"}
-	local cmdLoot      = {"loot", "ml", "master"}
+	local cmdLoot     = {"loot", "ml", "master"}
+	local cmdReserves = {"res", "reserves", "reserve"}
 
 	-- Slash command handler:
 	local function HandleSlashCmd(cmd)
@@ -5277,6 +5302,18 @@ do
 				if cmd2 == nil or cmd2 == "" or cmd2 == "toggle" then
 					addon.Master:Toggle()
 				end
+				
+			-- Reserves
+            elseif Utils.checkEntry(cmdReserves, cmd1) then
+                if cmd2 == nil or cmd2 == "" or cmd2 == "toggle" then
+                    addon.Reserves:ShowWindow()
+                elseif cmd2 == "import" then
+                    addon.Reserves:ShowImportBox()
+                else
+                    addon:Print(format(L.StrCmdCommands, "krt res"), "KRT")
+                    print(helpString:format("toggle", L.StrCmdToggle))
+                    print(helpString:format("import", L.StrCmdReservesImport)) -- Assumi che ci sia un L.StrCmdReservesImport
+                end
 
 			-- LFM Commands!
 			elseif Utils.checkEntry(cmdLFM, cmd1) then
@@ -5302,6 +5339,7 @@ do
 				print(helpString:format("changes", L.StrCmdChanges))
 				print(helpString:format("warnings", L.StrCmdWarnings))
 				print(helpString:format("log", L.StrCmdLog))
+				print(helpString:format("reserves", L.StrCmdReserves))
 			end
 		end
 	end
