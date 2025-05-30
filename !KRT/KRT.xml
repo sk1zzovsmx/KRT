@@ -935,7 +935,7 @@
 	</Button>
 	<!-- The Frame: Loot Manager -->
 	<Frame name="KRTMaster" inherits="KRTFrameTemplate">
-		<Size><AbsDimension x="230" y="420" /></Size>
+		<Size><AbsDimension x="230" y="480" /></Size>
 		<Layers>
 			<Layer level="ARTWORK">
 				<FontString name="$parentName" inherits="KRTFontStringGray" text="No item selected" justifyH="LEFT" justifyV="MIDDLE">
@@ -1010,7 +1010,7 @@
 				<Scripts><OnEnterPressed>self:ClearFocus()</OnEnterPressed></Scripts>
 			</EditBox>
 			<Button name="$parentMSBtn" inherits="KRTButtonTemplate" text="MS">
-				<Size><AbsDimension x="30" y="25" /></Size>
+				<Size><AbsDimension x="28" y="25" /></Size>
 				<Anchors>
 					<Anchor point="TOPLEFT" relativeTo="$parentItemBtn" relativePoint="BOTTOMLEFT">
 						<Offset><AbsDimension x="-3" y="-5" /></Offset>
@@ -1019,7 +1019,7 @@
 				<Scripts><OnClick>KRT.Master:BtnMS(self, button)</OnClick></Scripts>
 			</Button>
 			<Button name="$parentOSBtn" inherits="KRTButtonTemplate" text="OS">
-				<Size><AbsDimension x="30" y="25" /></Size>
+				<Size><AbsDimension x="28" y="25" /></Size>
 				<Anchors>
 					<Anchor point="LEFT" relativeTo="$parentMSBtn" relativePoint="RIGHT">
 						<Offset><AbsDimension x="5" y="0" /></Offset>
@@ -1027,17 +1027,26 @@
 				</Anchors>
 				<Scripts><OnClick>KRT.Master:BtnOS(self, button)</OnClick></Scripts>
 			</Button>
+            <Button name="$parentSRBtn" inherits="KRTButtonTemplate" text="SR">
+                <Size><AbsDimension x="28" y="25" /></Size>
+                <Anchors>
+                    <Anchor point="LEFT" relativeTo="$parentOSBtn" relativePoint="RIGHT">
+                        <Offset><AbsDimension x="5" y="0" /></Offset>
+                    </Anchor>
+                </Anchors>
+                <Scripts><OnClick>KRT.Master:BtnSR(self, button)</OnClick></Scripts>
+            </Button>			
 			<Button name="$parentFreeBtn" inherits="KRTButtonTemplate" text="Free">
-				<Size><AbsDimension x="50" y="25" /></Size>
+				<Size><AbsDimension x="35" y="25" /></Size>
 				<Anchors>
-					<Anchor point="LEFT" relativeTo="$parentOSBtn" relativePoint="RIGHT">
+					<Anchor point="LEFT" relativeTo="$parentSRBtn" relativePoint="RIGHT">
 						<Offset><AbsDimension x="5" y="0" /></Offset>
 					</Anchor>
 				</Anchors>
 				<Scripts><OnClick>KRT.Master:BtnFree(self, button)</OnClick></Scripts>
 			</Button>
 			<Button name="$parentCountdownBtn" inherits="KRTButtonTemplate" text="Countdown">
-				<Size><AbsDimension x="85" y="25" /></Size>
+				<Size><AbsDimension x="70" y="25" /></Size>
 				<Anchors>
 					<Anchor point="LEFT" relativeTo="$parentFreeBtn" relativePoint="RIGHT">
 						<Offset><AbsDimension x="5" y="0" /></Offset>
@@ -1051,7 +1060,7 @@
 						<Offset><AbsDimension x="15" y="-145" /></Offset>
 					</Anchor>
 					<Anchor point="BOTTOMRIGHT">
-						<Offset><AbsDimension x="-35" y="135" /></Offset>
+						<Offset><AbsDimension x="-35" y="165" /></Offset>
 					</Anchor>
 				</Anchors>
 			</ScrollFrame>
@@ -1130,6 +1139,24 @@
 					</Anchor>
 				</Anchors>
 			</Frame>
+			<Button name="$parentImportReservesBtn" inherits="KRTButtonTemplate" text="Import Reserve">
+			  <Size><AbsDimension x="105" y="25"/></Size>
+			  <Anchors>
+					<Anchor point="BOTTOMLEFT">
+						<Offset><AbsDimension x="10" y="10"/></Offset>
+					</Anchor>
+			  </Anchors>
+			  <Scripts><OnClick>KRT.Master:BtnImportReserves(self, button)</OnClick></Scripts>
+			</Button>
+			<Button name="$parentOpenReservesBtn" inherits="KRTButtonTemplate" text="Open List">
+			  <Size><AbsDimension x="105" y="25"/></Size>
+				<Anchors>
+					<Anchor point="BOTTOMRIGHT">
+						<Offset><AbsDimension x="-10" y="10"/></Offset>
+					</Anchor>
+				</Anchors>
+			  <Scripts><OnClick>KRT.Master:BtnOpenReserves(self, button)</OnClick></Scripts>
+			</Button>
 		</Frames>
 		<Scripts><OnLoad>KRT.Master:OnLoad(self)</OnLoad></Scripts>
 	</Frame>
@@ -1277,45 +1304,143 @@
 	</Frame>
 	<!-- ====== End of Changes ====== -->
 
-	<!-- ====== Start of Reserve ====== -->
+	<!-- ==================== Reserve List Window ==================== -->
 	<Frame name="KRTReserveListFrame" inherits="KRTFrameTemplate" toplevel="true" hidden="true" frameStrata="MEDIUM">
-        <Size><AbsDimension x="380" y="400" /></Size>
+        <Size><AbsDimension x="368" y="460"/></Size>
         <Anchors><Anchor point="CENTER"/></Anchors>
-        <Layers>
-            <Layer level="ARTWORK">
-                <FontString name="$parentTitle" inherits="GameFontNormalLarge" text="Elenco Riserve">
-                    <Anchors><Anchor point="TOP" relativePoint="TOP"><Offset><AbsDimension x="0" y="-12" /></Offset></Anchor></Anchors>
-                </FontString>
-            </Layer>
-        </Layers>
-        <Frames>
-            <Button name="$parentCloseButton" inherits="UIPanelButtonTemplate" text="Chiudi">
-                <Size><AbsDimension x="80" y="22" /></Size>
-                <Anchors><Anchor point="TOPRIGHT" relativePoint="TOPRIGHT"><Offset><AbsDimension x="-15" y="-15" /></Offset></Anchor></Anchors>
-                </Button>
-            <Button name="$parentClearButton" inherits="UIPanelButtonTemplate" text="Clear Reserves">
-                <Size><AbsDimension x="100" y="24" /></Size>
-                <Anchors><Anchor point="BOTTOMLEFT" relativePoint="BOTTOMLEFT"><Offset><AbsDimension x="16" y="10" /></Offset></Anchor></Anchors>
-                </Button>
+        <Backdrop bgFile="Interface\DialogFrame\UI-DialogBox-Background" tile="true">
+            <TileSize><AbsValue val="6" /></TileSize>
+            <EdgeSize><AbsValue val="6" /></EdgeSize>
+            <BackgroundInsets>
+                <AbsInset top="3" right="3" bottom="2" left="2" />
+            </BackgroundInsets>
+        </Backdrop>
+		<Layers>
+			<Layer level="ARTWORK">
+				<FontString name="$parentTitle" inherits="GameFontNormalLarge" text="Elenco Riserve">
+					<Anchors>
+						<Anchor point="TOP" relativePoint="TOP">
+							<Offset><AbsDimension x="0" y="-12"/></Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
 
-            <ScrollFrame name="$parentScrollFrame" inherits="KRTScrolLFrameTemplate">
+		<Frames>
+			<!-- ScrollFrame con ScrollChild -->
+			<ScrollFrame name="$parentScrollFrame" inherits="KRTScrolLFrameTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT">
+						<Offset><AbsDimension x="16" y="-40"/></Offset>
+					</Anchor>
+					<Anchor point="BOTTOMRIGHT">
+						<Offset><AbsDimension x="-32" y="60"/></Offset>
+					</Anchor>
+				</Anchors>
+				<ScrollChild>
+					<Frame name="KRTReserveListFrameScrollChild">
+						<Size><AbsDimension x="1" y="1"/></Size>
+					</Frame>
+				</ScrollChild>
+			</ScrollFrame>
+
+			<!-- Pulsante: Clear -->
+            <Button name="$parentClearButton" inherits="KRTButtonTemplate" text="Clear List">
+                <Size><AbsDimension x="100" y="24"/></Size>
                 <Anchors>
-                    <Anchor point="TOPLEFT">
-                        <Offset><AbsDimension x="16" y="-40" /></Offset>
-                    </Anchor>
-                    <Anchor point="BOTTOMRIGHT">
-                        <Offset><AbsDimension x="-32" y="40" /></Offset>
+                    <Anchor point="BOTTOMLEFT" relativePoint="BOTTOMLEFT">
+                        <Offset><AbsDimension x="16" y="20"/></Offset>
                     </Anchor>
                 </Anchors>
+            </Button>
+
+			<!-- Pulsante: Query Server -->
+            <Button name="$parentQueryButton" inherits="KRTButtonTemplate" text="Query Server">
+                <Size><AbsDimension x="120" y="24"/></Size>
+                <Anchors>
+                    <Anchor point="BOTTOM" relativePoint="BOTTOM">
+                        <Offset><AbsDimension x="0" y="20"/></Offset> </Anchor>
+                </Anchors>
+            </Button>
+
+			<!-- Pulsante: Chiudi -->
+            <Button name="$parentCloseButton" inherits="KRTButtonTemplate" text="Chiudi">
+                <Size><AbsDimension x="80" y="24"/></Size>
+                <Anchors>
+                    <Anchor point="BOTTOMRIGHT" relativePoint="BOTTOMRIGHT">
+                        <Offset><AbsDimension x="-16" y="20"/></Offset>
+                    </Anchor>
+                </Anchors>
+            </Button>
+		</Frames>
+
+		<Scripts>
+			<OnLoad>
+				KRT.Reserves:OnReserveListLoad(self)
+			</OnLoad>
+			<OnDragStart>
+				self:StartMoving()
+			</OnDragStart>
+			<OnDragStop>
+				self:StopMovingOrSizing()
+			</OnDragStop>
+		</Scripts>
+	</Frame>
+	<!-- ==================== End Reserve List Window ==================== -->
+
+	<!-- ====== Start of Reserve Import Window ====== -->
+	<Frame name="KRTImportWindow" inherits="KRTFrameTemplate" toplevel="true" hidden="true" frameStrata="DIALOG">
+		<Size><AbsDimension x="400" y="300" /></Size>
+		<Anchors><Anchor point="CENTER" /></Anchors>
+        <Backdrop bgFile="Interface\DialogFrame\UI-DialogBox-Background" tile="true">
+            <TileSize><AbsValue val="6" /></TileSize>
+            <EdgeSize><AbsValue val="6" /></EdgeSize>
+            <BackgroundInsets>
+                <AbsInset top="3" right="3" bottom="2" left="2" />
+            </BackgroundInsets>
+        </Backdrop>
+		<Frames>
+			<!-- Multiline EditBox for CSV -->
+            <ScrollFrame name="KRTImportScrollFrame" inherits="KRTScrolLFrameTemplate">
+                <Size><AbsDimension x="340" y="180" /></Size>
+                <Anchors>
+                    <Anchor point="TOP" relativePoint="TOP"><Offset><AbsDimension x="-5" y="-30" /></Offset></Anchor>
+                </Anchors>
+                <ScrollChild>
+                    <EditBox name="KRTImportEditBox" multiline="true" autoFocus="false" inherits="InputBoxTemplate">
+                        <Size><AbsDimension x="320" y="180" /></Size>
+                        <Scripts>
+                            <OnEscapePressed>self:ClearFocus()</OnEscapePressed>
+                        </Scripts>
+                    </EditBox>
+                </ScrollChild>
             </ScrollFrame>
-        </Frames>
-        <Scripts>
-            <OnLoad>KRT.Reserves:OnReserveListLoad(self)</OnLoad>
-            <OnDragStart>self:StartMoving()</OnDragStart>
-            <OnDragStop>self:StopMovingOrSizing()</OnDragStop>
-        </Scripts>
-    </Frame>
-	<!-- ====== End of Reserve ====== -->
+
+			<!-- Import Button -->
+            <Button name="KRTImportConfirmButton" inherits="KRTButtonTemplate" text="Importa">
+                <Size><AbsDimension x="100" y="24" /></Size>
+                <Anchors><Anchor point="BOTTOMLEFT"><Offset><AbsDimension x="20" y="20" /></Offset></Anchor></Anchors>
+                <Scripts>
+                    <OnClick>
+                        local csv = KRTImportEditBox:GetText()
+                        if csv and csv ~= "" then
+                            KRT.Reserves:ParseCSV(csv)
+                            KRTImportWindow:Hide()
+                        end
+                    </OnClick>
+                </Scripts>
+            </Button>
+
+			<!-- Cancel Button -->
+            <Button name="KRTImportCancelButton" inherits="KRTButtonTemplate" text="Chiudi">
+                <Size><AbsDimension x="100" y="24" /></Size>
+                <Anchors><Anchor point="BOTTOMRIGHT"><Offset><AbsDimension x="-20" y="20" /></Offset></Anchor></Anchors>
+                <Scripts><OnClick>KRTImportWindow:Hide()</OnClick></Scripts>
+            </Button>
+		</Frames>
+	</Frame>
+	<!-- ====== End of Reserve Import Window ====== -->
 
 	<!-- ====== Start of Loot Bans Frame ====== -->
 	<!-- ====== End of Loot Bans Frame ====== -->
