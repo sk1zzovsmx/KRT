@@ -1,6 +1,6 @@
 
 # KRT: Kader Raid Tools
-AddOn Version: **0.5.6b**
+AddOn Version: **0.5.7**
 Game Version: **3.3.5a**
 
 Copyright (C) 2018 [Kader Bouyakoub](https://github.com/bkader)
@@ -76,12 +76,17 @@ Going from top to bottom, here are the different buttons you will see on the mai
 
 - **Select Item** / **Remove Item**: Same button, different actions. If the item that appears is from a boss drop, clicking on this button with open a dropDown menu for you with all the boss loot so you can select which item you want to perform the next action on. But, in case the item was dropped on the addOn from inventory (case of later rolls), the button will simply removes it from the window.
 - **Spam Loot** / **Ready Check**: for the same situations as the one above it, if it's from a boss you simply tell the raid what dropped, but if it's from your inventory, you tell people that you are going to roll and do a ready check before you start.
-- **MS** / **OS** / **Free**: Simply announced the items you're rolling for main spec, off spec or if it's a free to roll item.
+- **MS** / **OS** / **SR** / **Free**: Simply announced the items you're rolling for main spec, off spec, soft reserve (if exist) or if it's a free to roll item.
 - **Countdown**: self-explanatory, you do a countdown before you change the roll or keep the item.
 - **Award** / **Trade**: if the item comes from a boss and you click this button, it will assign it to him/her. Otherwise, if you hit trade, there are two scenarios: the player is far from you, so it will announce the winner and tell him/her to trade you, marking you as **Star** and the player as **Triangle**. The second scenario is the player is next to you, so when you hit the button it will automatically open the trade window and pick up the item from you to drop there, of course after announcing the winner's name.
 - **Roll**: easy, if you want to roll, you can do the slash roll or hit this button.
 - **Clear** / **Allow**: sometimes you want to clear the rolls and start over, this is the button for it. as for the second part, if you choose to ignore rolls after countdown, you won't see them there, so you simply hit the button and tell people to roll.
 - **Hold** / **Bank** / **DE**: we talked earlier about loot people right? These are the buttons to assign the loot to them.
+- **Import Reserve** / **Open List **: add the function to import CSV text from SoftReserve website. Open the window list of the reserve.
+
+  ![image](https://github.com/user-attachments/assets/5eee47ce-9a60-4794-8717-46c4092aa8e1)
+  ![image](https://github.com/user-attachments/assets/54a8fc6c-062b-434f-a63d-780c17850475)
+
 
 ## Loot History (*Logger*)
 
