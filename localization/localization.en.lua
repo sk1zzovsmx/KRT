@@ -4,11 +4,13 @@ local setmetatable = setmetatable
 local tostring = tostring
 local rawset = rawset
 
-local L = setmetatable({}, {__index = function(self, k)
-	if k ~= nil then rawset(self, k, tostring(k)) end
-	return tostring(k)
+-- Define L *once* with the metatable and assign it directly to addon.L
+addon.L = addon.L or {} -- Ensure addon.L exists before setting metatable
+addon.L = setmetatable(addon.L, {__index = function(self, k)
+    if k ~= nil then rawset(self, k, tostring(k)) end
+    return tostring(k)
 end})
-addon.L = L
+local L = addon.L -- Make a local reference for convenience within this file
 
 -- ==================== Callbacks ==================== --
 L.StrCbErrUsage = "Usage: KRT:RegisterCallback(event, callbacks)"
@@ -43,6 +45,7 @@ L.BtnRemoveItem            = "Remove Item"
 L.BtnSpamLoot              = "Spam Loot"
 L.BtnMS                    = "MS"
 L.BtnOS                    = "OS"
+L.BtnSR                    = "SR"
 L.BtnFree                  = "Free"
 L.BtnRoll                  = "Roll"
 L.BtnCountdown             = "Countdown"
@@ -56,12 +59,15 @@ L.ChatSpamLoot             = "The boss dropped:"
 L.ChatReadyCheck           = "Ready Check before rolling items!"
 L.ChatRollMS               = "Roll for MS on: %s"
 L.ChatRollOS               = "Roll for OS on: %s"
+L.ChatRollSR               = "Roll %s for SR on: %s"
 L.ChatRollFree             = "Free roll on: %s"
 L.ChatRollMSMultipleHigh   = "Roll for MS on: %s. Highest %s rolls win"
 L.ChatRollOSMultipleHigh   = "Roll for OS on: %s. Highest %s rolls win"
+L.ChatRollSRMultipleHigh   = "Roll %s for SR on: %s. Highest %s rolls win"
 L.ChatRollFreeMultipleHigh = "Free roll on: %s. Highest %s rolls win"
 L.ChatRollMSMultipleLow    = "Roll for MS on: %s. Lowest %s rolls win"
 L.ChatRollOSMultipleLow    = "Roll for OS on: %s. Lowest %s rolls win"
+L.ChatRollSRMultipleLow    = "Roll %s for SR on: %s. Lowest %s rolls win"
 L.ChatRollFreeMultipleLow  = "Free roll on: %s. Lowest %s rolls win"
 L.ChatCountdownTic         = "Rolling ends in %d sec"
 L.ChatCountdownEnd         = "Rolling ends now!"
@@ -102,7 +108,31 @@ L.StrConfigIgnoreStacks         = "Allow trading a stack of an item"
 L.StrConfigShowTooltips         = "Show items tooltips"
 L.StrConfigMinimapButton        = "Show minimap button"
 L.StrConfigCountdownDuration    = "Countdown Duration"
+L.StrConfigCountdownSimpleRaidMsg = "Simple raid messages for countdown"
 L.StrConfigAbout                = "Made with love by |cfff58cbaKader|r B\n|cffffffffhttps://github.com/bkader|r\nhttps://discord.gg/a8z5CyS3eW"
+
+-- ==================== Raid Helper Reserves ==================== --
+L.BtnClearReserve   = "Clear Reserve"
+L.BtnCloseWindow    = "Close Window"
+L.BtnQueryItem      = "Query Item"
+L.BtnOpenReserve    = "Open Reserves"
+L.StrNoReserveFound = "No reserves found."
+L.StrRaidReserves   = "Raid Reserves"
+L.StrImportReservesTitle = "Import Raid Reserves"
+L.StrImportReservesHint = "Paste your raid reserves CSV data below:"
+L.BtnLoad = "Load"
+L.ErrNoTextFound = "No text found in the import window."
+L.WarnNoValidRows = "No valid rows found in CSV (check header)."
+L.SuccessReservesParsed = "Reserves parsed: %s"
+L.StrItemUnavailable = "[Item ID %s unavailable]"
+L.TooltipQueryItemHelp1 = "Click to retrieve item information from the server."
+L.TooltipQueryItemHelp2 = "|cffff0000Warning: May cause a temporary disconnect!|r"
+L.StrQueryingItemInitiated = "Attempting to retrieve info for ItemID: %s. You might be disconnected!"
+L.StrQueryingItemSuccess = "Successfully retrieved item information for %s."
+L.StrReserveListCleared = "Reserve list cleared."
+L.StrReserveListTitle = "Reserve List"
+L.BtnClose = "Close"
+L.BtnClearReserves = "Clear Reserves"
 
 -- ==================== Raid Warnings Frame ==================== --
 L.StrMessage            = "Message"
@@ -110,6 +140,7 @@ L.StrWarningsHelp       = "Tips:"
 L.StrWarningsHelp       = "- |cffffd700Left-Click|r to select a warning, click again to cancel selection.\n- |cffffd700Ctrl-Click|r for a quick raid warning.\n- When you select a warning, you can either |cffffd700Edit|r it, |cffffd700Delete|r it or |cffffd700Announce|r it using the provided buttons."
 L.StrWarningsError      = "Only the body of a message is required! Though, we recommend naming your warnings so you never get lost."
 L.StrCmdWarningAnnounce = "announce the specified raid warning"
+L.StrConfirmDeleteWarning = "Are you sure you want to delete this raid warning?"
 
 -- ==================== MS Changes Frame ==================== --
 L.StrChanges             = "MS Changes"
@@ -227,6 +258,7 @@ L.StrCmdLFMStart        = "starts LFM spam"
 L.StrCmdLFMStop         = "stops LFM spam"
 L.StrCmdChangesDemand   = "ask raid members to whisper you their ms changes"
 L.StrCmdChangesAnnounce = "spam ms changes to raid channel"
+L.StrCmdReserves        = "access reserve list related commands"
 
 -- ==================== Raid & Loot Locales ==================== --
 L.ItemValues = {
@@ -239,16 +271,28 @@ L.ItemValues = {
 	[7] = "Artifact",
 }
 L.RaidZones = {
-	["The Eye of Eternity"]         = "The Eye of Eternity",
-	["The Obsidian Sanctum"]        = "The Obsidian Sanctum",
-	["Vault of Archavon"]           = "Vault of Archavon",
-	["Naxxramas"]                   = "Naxxramas",
-	["Ulduar"]                      = "Ulduar",
-	["Trial of the Crusader"]       = "Trial of the Crusader",
-	["Trial of the Grand Crusader"] = "Trial of the Grand Crusader",
-	["Onyxia's Lair"]               = "Onyxia's Lair",
-	["Icecrown Citadel"]            = "Icecrown Citadel",
-	["The Ruby Sanctum"]            = "The Ruby Sanctum",
+    -- The Burning Crusade
+    ["Karazhan"] = "Karazhan",
+    ["Gruul's Lair"] = "Gruul's Lair",
+    ["Magtheridon's Lair"] = "Magtheridon's Lair",
+    ["Serpentshrine Cavern"] = "Serpentshrine Cavern",
+    ["The Eye"] = "The Eye", -- Tempest Keep: The Eye
+    ["Battle for Mount Hyjal"] = "Battle for Mount Hyjal",
+    ["Black Temple"] = "Black Temple",
+    ["Sunwell Plateau"] = "Sunwell Plateau",
+    ["Zul'Aman"] = "Zul'Aman",
+
+    -- Wrath of the Lich King
+    ["Naxxramas"] = "Naxxramas",
+    ["The Obsidian Sanctum"] = "The Obsidian Sanctum",
+    ["The Eye of Eternity"] = "The Eye of Eternity",
+    ["Vault of Archavon"] = "Vault of Archavon",
+    ["Ulduar"] = "Ulduar",
+    ["Onyxia's Lair"] = "Onyxia's Lair", -- Nota: Onyxia è presente anche in Classic
+    ["Trial of the Crusader"] = "Trial of the Crusader",
+    ["Trial of the Grand Crusader"] = "Trial of the Grand Crusader", -- Già presente, lo mantengo
+    ["Icecrown Citadel"] = "Icecrown Citadel",
+    ["The Ruby Sanctum"] = "The Ruby Sanctum", -- Già presente, lo mantengo
 }
 -- The reason we are using these is because of the missing
 -- UNIT_DIED event once these bosses are dealt with.

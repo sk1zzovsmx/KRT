@@ -1,4 +1,4 @@
-<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+	<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
 ..\FrameXML\UI.xsd">
 
 	<!-- ====== Start of Minimap Button ====== -->
@@ -43,220 +43,238 @@
 		<Size><AbsDimension x="185" y="0" /></Size>
 	</FontString>
 	<!-- The Frame: Config -->
-	<Frame name="KRTConfig" inherits="KRTFrameTemplate">
-		<Size><AbsDimension x="245" y="445" /></Size>
-		<Layers>
-			<Layer level="ARTWORK">
-				<FontString name="$parentsortAscendingStr" inherits="KRTConfigFontStringTemplate" text="Sort rolls ascending">
-					<Anchors>
-						<Anchor point="TOPLEFT">
-							<Offset><AbsDimension x="35" y="-35" /></Offset>
-						</Anchor>
-					</Anchors>
-				</FontString>
-				<FontString name="$parentuseRaidWarningStr" inherits="KRTConfigFontStringTemplate" text="Use raid warnings">
-					<Anchors>
-						<Anchor point="TOPLEFT" relativeTo="$parentsortAscendingStr" relativePoint="BOTTOMLEFT">
-							<Offset><AbsDimension x="0" y="-7.5" /></Offset>
-						</Anchor>
-					</Anchors>
-				</FontString>
-				<FontString name="$parentannounceOnWinStr" inherits="KRTConfigFontStringTemplate" text="Announce loot items winners">
-					<Anchors>
-						<Anchor point="TOPLEFT" relativeTo="$parentuseRaidWarningStr" relativePoint="BOTTOMLEFT">
-							<Offset><AbsDimension x="0" y="-7.5" /></Offset>
-						</Anchor>
-					</Anchors>
-				</FontString>
-				<FontString name="$parentannounceOnHoldStr" inherits="KRTConfigFontStringTemplate" text="Announce items held for later roll">
-					<Anchors>
-						<Anchor point="TOPLEFT" relativeTo="$parentannounceOnWinStr" relativePoint="BOTTOMLEFT">
-							<Offset><AbsDimension x="0" y="-7.5" /></Offset>
-						</Anchor>
-					</Anchors>
-				</FontString>
-				<FontString name="$parentannounceOnBankStr" inherits="KRTConfigFontStringTemplate" text="Announce reserved items (bank)">
-					<Anchors>
-						<Anchor point="TOPLEFT" relativeTo="$parentannounceOnHoldStr" relativePoint="BOTTOMLEFT">
-							<Offset><AbsDimension x="0" y="-7.5" /></Offset>
-						</Anchor>
-					</Anchors>
-				</FontString>
-				<FontString name="$parentannounceOnDisenchantStr" inherits="KRTConfigFontStringTemplate" text="Announce items to be disenchanted">
-					<Anchors>
-						<Anchor point="TOPLEFT" relativeTo="$parentannounceOnBankStr" relativePoint="BOTTOMLEFT">
-							<Offset><AbsDimension x="0" y="-7.5" /></Offset>
-						</Anchor>
-					</Anchors>
-				</FontString>
-				<FontString name="$parentlootWhispersStr" inherits="KRTConfigFontStringTemplate" text="Send whispers to loot holder, banker and disenchanter.">
-					<Anchors>
-						<Anchor point="TOPLEFT" relativeTo="$parentannounceOnDisenchantStr" relativePoint="BOTTOMLEFT">
-							<Offset><AbsDimension x="0" y="-7.5" /></Offset>
-						</Anchor>
-					</Anchors>
-				</FontString>
-				<FontString name="$parentcountdownRollsBlockStr" inherits="KRTConfigFontStringTemplate" text="Ignore all rolls done after countdown">
-					<Anchors>
-						<Anchor point="TOPLEFT" relativeTo="$parentlootWhispersStr" relativePoint="BOTTOMLEFT">
-							<Offset><AbsDimension x="0" y="-7.5" /></Offset>
-						</Anchor>
-					</Anchors>
-				</FontString>
-				<FontString name="$parentscreenReminderStr" inherits="KRTConfigFontStringTemplate" text="ScreenShot reminder before trading an item">
-					<Anchors>
-						<Anchor point="TOPLEFT" relativeTo="$parentcountdownRollsBlockStr" relativePoint="BOTTOMLEFT">
-							<Offset><AbsDimension x="0" y="-7.5" /></Offset>
-						</Anchor>
-					</Anchors>
-				</FontString>
-				<FontString name="$parentignoreStacksStr" inherits="KRTConfigFontStringTemplate" text="Allow trading a stack of an item">
-					<Anchors>
-						<Anchor point="TOPLEFT" relativeTo="$parentscreenReminderStr" relativePoint="BOTTOMLEFT">
-							<Offset><AbsDimension x="0" y="-7.5" /></Offset>
-						</Anchor>
-					</Anchors>
-				</FontString>
-				<FontString name="$parentshowTooltipsStr" inherits="KRTConfigFontStringTemplate" text="Show items tooltips">
-					<Anchors>
-						<Anchor point="TOPLEFT" relativeTo="$parentignoreStacksStr" relativePoint="BOTTOMLEFT">
-							<Offset><AbsDimension x="0" y="-7.5" /></Offset>
-						</Anchor>
-					</Anchors>
-				</FontString>
-				<FontString name="$parentminimapButtonStr" inherits="KRTConfigFontStringTemplate" text="Show minimap button">
-					<Anchors>
-						<Anchor point="TOPLEFT" relativeTo="$parentshowTooltipsStr" relativePoint="BOTTOMLEFT">
-							<Offset><AbsDimension x="0" y="-7.5" /></Offset>
-						</Anchor>
-					</Anchors>
-				</FontString>
-				<FontString name="$parentcountdownDurationStr" inherits="GameFontNormalSmall" text="Countdown Duration">
-					<Anchors><Anchor point="BOTTOM"><Offset><AbsDimension x="0" y="80" /></Offset></Anchor></Anchors>
-				</FontString>
-				<FontString name="$parentAboutStr" inherits="GameFontNormalSmall">
-					<Size><AbsDimension x="205" y="0" /></Size>
-					<Anchors><Anchor point="BOTTOM"><Offset><AbsDimension x="0" y="12.5" /></Offset></Anchor></Anchors>
-				</FontString>
-			</Layer>
-		</Layers>
-		<Frames>
-			<CheckButton name="$parentsortAscending" inherits="KRTConfigCheckButtonTemplate">
-				<Anchors>
-					<Anchor point="TOPRIGHT" relativeTo="$parentsortAscendingStr" relativePoint="TOPLEFT">
-						<Offset><AbsDimension x="-2.5" y="5" /></Offset>
-					</Anchor>
-				</Anchors>
-			</CheckButton>
-			<CheckButton name="$parentuseRaidWarning" inherits="KRTConfigCheckButtonTemplate">
-				<Anchors>
-					<Anchor point="TOPRIGHT" relativeTo="$parentuseRaidWarningStr" relativePoint="TOPLEFT">
-						<Offset><AbsDimension x="-2.5" y="5" /></Offset>
-					</Anchor>
-				</Anchors>
-			</CheckButton>
-			<CheckButton name="$parentannounceOnWin" inherits="KRTConfigCheckButtonTemplate">
-				<Anchors>
-					<Anchor point="TOPRIGHT" relativeTo="$parentannounceOnWinStr" relativePoint="TOPLEFT">
-						<Offset><AbsDimension x="-2.5" y="5" /></Offset>
-					</Anchor>
-				</Anchors>
-			</CheckButton>
-			<CheckButton name="$parentannounceOnHold" inherits="KRTConfigCheckButtonTemplate">
-				<Anchors>
-					<Anchor point="TOPRIGHT" relativeTo="$parentannounceOnHoldStr" relativePoint="TOPLEFT">
-						<Offset><AbsDimension x="-2.5" y="5" /></Offset>
-					</Anchor>
-				</Anchors>
-			</CheckButton>
-			<CheckButton name="$parentannounceOnBank" inherits="KRTConfigCheckButtonTemplate">
-				<Anchors>
-					<Anchor point="TOPRIGHT" relativeTo="$parentannounceOnBankStr" relativePoint="TOPLEFT">
-						<Offset><AbsDimension x="-2.5" y="5" /></Offset>
-					</Anchor>
-				</Anchors>
-			</CheckButton>
-			<CheckButton name="$parentannounceOnDisenchant" inherits="KRTConfigCheckButtonTemplate">
-				<Anchors>
-					<Anchor point="TOPRIGHT" relativeTo="$parentannounceOnDisenchantStr" relativePoint="TOPLEFT">
-						<Offset><AbsDimension x="-2.5" y="5" /></Offset>
-					</Anchor>
-				</Anchors>
-			</CheckButton>
-			<CheckButton name="$parentlootWhispers" inherits="KRTConfigCheckButtonTemplate">
-				<Anchors>
-					<Anchor point="TOPRIGHT" relativeTo="$parentlootWhispersStr" relativePoint="TOPLEFT">
-						<Offset><AbsDimension x="-2.5" y="5" /></Offset>
-					</Anchor>
-				</Anchors>
-			</CheckButton>
-			<CheckButton name="$parentcountdownRollsBlock" inherits="KRTConfigCheckButtonTemplate">
-				<Anchors>
-					<Anchor point="TOPRIGHT" relativeTo="$parentcountdownRollsBlockStr" relativePoint="TOPLEFT">
-						<Offset><AbsDimension x="-2.5" y="5" /></Offset>
-					</Anchor>
-				</Anchors>
-			</CheckButton>
-			<CheckButton name="$parentscreenReminder" inherits="KRTConfigCheckButtonTemplate">
-				<Anchors>
-					<Anchor point="TOPRIGHT" relativeTo="$parentscreenReminderStr" relativePoint="TOPLEFT">
-						<Offset><AbsDimension x="-2.5" y="5" /></Offset>
-					</Anchor>
-				</Anchors>
-			</CheckButton>
-			<CheckButton name="$parentignoreStacks" inherits="KRTConfigCheckButtonTemplate">
-				<Anchors>
-					<Anchor point="TOPRIGHT" relativeTo="$parentignoreStacksStr" relativePoint="TOPLEFT">
-						<Offset><AbsDimension x="-2.5" y="5" /></Offset>
-					</Anchor>
-				</Anchors>
-			</CheckButton>
-			<CheckButton name="$parentshowTooltips" inherits="KRTConfigCheckButtonTemplate">
-				<Anchors>
-					<Anchor point="TOPRIGHT" relativeTo="$parentshowTooltipsStr" relativePoint="TOPLEFT">
-						<Offset><AbsDimension x="-2.5" y="5" /></Offset>
-					</Anchor>
-				</Anchors>
-			</CheckButton>
-			<CheckButton name="$parentminimapButton" inherits="KRTConfigCheckButtonTemplate">
-				<Anchors>
-					<Anchor point="TOPRIGHT" relativeTo="$parentminimapButtonStr" relativePoint="TOPLEFT">
-						<Offset><AbsDimension x="-2.5" y="5" /></Offset>
-					</Anchor>
-				</Anchors>
-			</CheckButton>
-			<Slider name="$parentcountdownDuration" inherits="OptionsSliderTemplate" minValue="5.0" maxValue="60.0" defaultValue="5.0" valueStep="5.0">
-				<Size><AbsDimension x="180" y="15" /></Size>
-				<Anchors><Anchor point="BOTTOM"><Offset><AbsDimension x="0" y="95" /></Offset></Anchor></Anchors>
-				<Scripts>
-					<OnLoad>
-						getglobal(self:GetName() .. "Low"):SetText("5")
-						getglobal(self:GetName() .. "High"):SetText("60")
-					</OnLoad>
-					<OnValueChanged>KRT.Config:OnClick(self)</OnValueChanged>
-				</Scripts>
-			</Slider>
-
-			<Button name="$parentDefaultsBtn" inherits="KRTButtonTemplate" text="Defaults">
-				<Size><AbsDimension x="105" y="25" /></Size>
-				<Anchors>
-					<Anchor point="BOTTOMLEFT" relativePoint="BOTTOMLEFT">
-						<Offset><AbsDimension x="10" y="47.5" /></Offset>
-					</Anchor>
-				</Anchors>
-			</Button>
-			<Button name="$parentCloseBtn" inherits="KRTButtonTemplate" text="CLOSE">
-				<Size><AbsDimension x="105" y="25" /></Size>
-				<Anchors>
-					<Anchor point="BOTTOMRIGHT" relativePoint="BOTTOMRIGHT">
-						<Offset><AbsDimension x="-10" y="47.5" /></Offset>
-					</Anchor>
-				</Anchors>
-				<Scripts><OnClick>self:GetParent():Hide()</OnClick></Scripts>
-			</Button>
-		</Frames>
-		<Scripts><OnLoad>KRT.Config:OnLoad(self)</OnLoad></Scripts>
-	</Frame>
+    <Frame name="KRTConfig" inherits="KRTFrameTemplate">
+        <Size><AbsDimension x="245" y="445" /></Size>
+        <Layers>
+            <Layer level="ARTWORK">
+                <FontString name="$parentsortAscendingStr" inherits="KRTConfigFontStringTemplate" text="Sort rolls ascending">
+                    <Anchors>
+                        <Anchor point="TOPLEFT">
+                            <Offset><AbsDimension x="35" y="-35" /></Offset>
+                        </Anchor>
+                    </Anchors>
+                </FontString>
+                <FontString name="$parentuseRaidWarningStr" inherits="KRTConfigFontStringTemplate" text="Use raid warnings">
+                    <Anchors>
+                        <Anchor point="TOPLEFT" relativeTo="$parentsortAscendingStr" relativePoint="BOTTOMLEFT">
+                            <Offset><AbsDimension x="0" y="-7.5" /></Offset>
+                        </Anchor>
+                    </Anchors>
+                </FontString>
+                <FontString name="$parentcountdownSimpleRaidMsgStr" inherits="KRTConfigFontStringTemplate" text="Simple raid messages for countdown">
+                    <Anchors>
+                        <Anchor point="TOPLEFT" relativeTo="$parentuseRaidWarningStr" relativePoint="BOTTOMLEFT">
+                            <Offset><AbsDimension x="0" y="-7.5" /></Offset>
+                        </Anchor>
+                    </Anchors>
+                </FontString>
+                <FontString name="$parentannounceOnWinStr" inherits="KRTConfigFontStringTemplate" text="Announce loot items winners">
+                    <Anchors>
+                        <Anchor point="TOPLEFT" relativeTo="$parentcountdownSimpleRaidMsgStr" relativePoint="BOTTOMLEFT"> <Offset><AbsDimension x="0" y="-7.5" /></Offset>
+                        </Anchor>
+                    </Anchors>
+                </FontString>
+                <FontString name="$parentannounceOnHoldStr" inherits="KRTConfigFontStringTemplate" text="Announce items held for later roll">
+                    <Anchors>
+                        <Anchor point="TOPLEFT" relativeTo="$parentannounceOnWinStr" relativePoint="BOTTOMLEFT">
+                            <Offset><AbsDimension x="0" y="-7.5" /></Offset>
+                        </Anchor>
+                    </Anchors>
+                </FontString>
+                <FontString name="$parentannounceOnBankStr" inherits="KRTConfigFontStringTemplate" text="Announce reserved items (bank)">
+                    <Anchors>
+                        <Anchor point="TOPLEFT" relativeTo="$parentannounceOnHoldStr" relativePoint="BOTTOMLEFT">
+                            <Offset><AbsDimension x="0" y="-7.5" /></Offset>
+                        </Anchor>
+                    </Anchors>
+                </FontString>
+                <FontString name="$parentannounceOnDisenchantStr" inherits="KRTConfigFontStringTemplate" text="Announce items to be disenchanted">
+                    <Anchors>
+                        <Anchor point="TOPLEFT" relativeTo="$parentannounceOnBankStr" relativePoint="BOTTOMLEFT">
+                            <Offset><AbsDimension x="0" y="-7.5" /></Offset>
+                        </Anchor>
+                    </Anchors>
+                </FontString>
+                <FontString name="$parentlootWhispersStr" inherits="KRTConfigFontStringTemplate" text="Send whispers to loot holder, banker and disenchanter.">
+                    <Anchors>
+                        <Anchor point="TOPLEFT" relativeTo="$parentannounceOnDisenchantStr" relativePoint="BOTTOMLEFT">
+                            <Offset><AbsDimension x="0" y="-7.5" /></Offset>
+                        </Anchor>
+                    </Anchors>
+                </FontString>
+                <FontString name="$parentcountdownRollsBlockStr" inherits="KRTConfigFontStringTemplate" text="Ignore all rolls done after countdown">
+                    <Anchors>
+                        <Anchor point="TOPLEFT" relativeTo="$parentlootWhispersStr" relativePoint="BOTTOMLEFT">
+                            <Offset><AbsDimension x="0" y="-7.5" /></Offset>
+                        </Anchor>
+                    </Anchors>
+                </FontString>
+                <FontString name="$parentscreenReminderStr" inherits="KRTConfigFontStringTemplate" text="ScreenShot reminder before trading an item">
+                    <Anchors>
+                        <Anchor point="TOPLEFT" relativeTo="$parentcountdownRollsBlockStr" relativePoint="BOTTOMLEFT">
+                            <Offset><AbsDimension x="0" y="-7.5" /></Offset>
+                        </Anchor>
+                    </Anchors>
+                </FontString>
+                <FontString name="$parentignoreStacksStr" inherits="KRTConfigFontStringTemplate" text="Allow trading a stack of an item">
+                    <Anchors>
+                        <Anchor point="TOPLEFT" relativeTo="$parentscreenReminderStr" relativePoint="BOTTOMLEFT">
+                            <Offset><AbsDimension x="0" y="-7.5" /></Offset>
+                        </Anchor>
+                    </Anchors>
+                </FontString>
+                <FontString name="$parentshowTooltipsStr" inherits="KRTConfigFontStringTemplate" text="Show items tooltips">
+                    <Anchors>
+                        <Anchor point="TOPLEFT" relativeTo="$parentignoreStacksStr" relativePoint="BOTTOMLEFT">
+                            <Offset><AbsDimension x="0" y="-7.5" /></Offset>
+                        </Anchor>
+                    </Anchors>
+                </FontString>
+                <FontString name="$parentminimapButtonStr" inherits="KRTConfigFontStringTemplate" text="Show minimap button">
+                    <Anchors>
+                        <Anchor point="TOPLEFT" relativeTo="$parentshowTooltipsStr" relativePoint="BOTTOMLEFT">
+                            <Offset><AbsDimension x="0" y="-7.5" /></Offset>
+                        </Anchor>
+                    </Anchors>
+                </FontString>
+                <FontString name="$parentcountdownDurationStr" inherits="GameFontNormalSmall" text="Countdown Duration">
+                    <Anchors><Anchor point="BOTTOM"><Offset><AbsDimension x="0" y="80" /></Offset></Anchor></Anchors>
+                </FontString>
+                <FontString name="$parentAboutStr" inherits="GameFontNormalSmall">
+                    <Size><AbsDimension x="205" y="0" /></Size>
+                    <Anchors><Anchor point="BOTTOM"><Offset><AbsDimension x="0" y="12.5" /></Offset></Anchor></Anchors>
+                </FontString>
+            </Layer>
+        </Layers>
+        <Frames>
+            <CheckButton name="$parentsortAscending" inherits="KRTConfigCheckButtonTemplate">
+                <Anchors>
+                    <Anchor point="TOPRIGHT" relativeTo="$parentsortAscendingStr" relativePoint="TOPLEFT">
+                        <Offset><AbsDimension x="-2.5" y="5" /></Offset>
+                    </Anchor>
+                </Anchors>
+            </CheckButton>
+            <CheckButton name="$parentuseRaidWarning" inherits="KRTConfigCheckButtonTemplate">
+                <Anchors>
+                    <Anchor point="TOPRIGHT" relativeTo="$parentuseRaidWarningStr" relativePoint="TOPLEFT">
+                        <Offset><AbsDimension x="-2.5" y="5" /></Offset>
+                    </Anchor>
+                </Anchors>
+                <Scripts>
+                    <OnClick>KRT.Config:OnClick(self, button)</OnClick>
+                </Scripts>
+            </CheckButton>
+            <CheckButton name="$parentcountdownSimpleRaidMsg" inherits="KRTConfigCheckButtonTemplate">
+                <Anchors>
+                    <Anchor point="TOPRIGHT" relativeTo="$parentcountdownSimpleRaidMsgStr" relativePoint="TOPLEFT"> 
+                        <Offset><AbsDimension x="-2.5" y="5" /></Offset>
+                    </Anchor>
+                </Anchors>
+                <Scripts>
+                    <OnClick>KRT.Config:OnClick(self, button)</OnClick>
+                </Scripts>
+            </CheckButton>
+            <CheckButton name="$parentannounceOnWin" inherits="KRTConfigCheckButtonTemplate">
+                <Anchors>
+                    <Anchor point="TOPRIGHT" relativeTo="$parentannounceOnWinStr" relativePoint="TOPLEFT">
+                        <Offset><AbsDimension x="-2.5" y="5" /></Offset>
+                    </Anchor>
+                </Anchors>
+            </CheckButton>
+            <CheckButton name="$parentannounceOnHold" inherits="KRTConfigCheckButtonTemplate">
+                <Anchors>
+                    <Anchor point="TOPRIGHT" relativeTo="$parentannounceOnHoldStr" relativePoint="TOPLEFT">
+                        <Offset><AbsDimension x="-2.5" y="5" /></Offset>
+                    </Anchor>
+                </Anchors>
+            </CheckButton>
+            <CheckButton name="$parentannounceOnBank" inherits="KRTConfigCheckButtonTemplate">
+                <Anchors>
+                    <Anchor point="TOPRIGHT" relativeTo="$parentannounceOnBankStr" relativePoint="TOPLEFT">
+                        <Offset><AbsDimension x="-2.5" y="5" /></Offset>
+                    </Anchor>
+                </Anchors>
+            </CheckButton>
+            <CheckButton name="$parentannounceOnDisenchant" inherits="KRTConfigCheckButtonTemplate">
+                <Anchors>
+                    <Anchor point="TOPRIGHT" relativeTo="$parentannounceOnDisenchantStr" relativePoint="TOPLEFT">
+                        <Offset><AbsDimension x="-2.5" y="5" /></Offset>
+                    </Anchor>
+                </Anchors>
+            </CheckButton>
+            <CheckButton name="$parentlootWhispers" inherits="KRTConfigCheckButtonTemplate">
+                <Anchors>
+                    <Anchor point="TOPRIGHT" relativeTo="$parentlootWhispersStr" relativePoint="TOPLEFT">
+                        <Offset><AbsDimension x="-2.5" y="5" /></Offset>
+                    </Anchor>
+                </Anchors>
+            </CheckButton>
+            <CheckButton name="$parentcountdownRollsBlock" inherits="KRTConfigCheckButtonTemplate">
+                <Anchors>
+                    <Anchor point="TOPRIGHT" relativeTo="$parentcountdownRollsBlockStr" relativePoint="TOPLEFT">
+                        <Offset><AbsDimension x="-2.5" y="5" /></Offset>
+                    </Anchor>
+                </Anchors>
+            </CheckButton>
+            <CheckButton name="$parentscreenReminder" inherits="KRTConfigCheckButtonTemplate">
+                <Anchors>
+                    <Anchor point="TOPRIGHT" relativeTo="$parentscreenReminderStr" relativePoint="TOPLEFT">
+                        <Offset><AbsDimension x="-2.5" y="5" /></Offset>
+                    </Anchor>
+                </Anchors>
+            </CheckButton>
+            <CheckButton name="$parentignoreStacks" inherits="KRTConfigCheckButtonTemplate">
+                <Anchors>
+                    <Anchor point="TOPRIGHT" relativeTo="$parentignoreStacksStr" relativePoint="TOPLEFT">
+                        <Offset><AbsDimension x="-2.5" y="5" /></Offset>
+                    </Anchor>
+                </Anchors>
+            </CheckButton>
+            <CheckButton name="$parentshowTooltips" inherits="KRTConfigCheckButtonTemplate">
+                <Anchors>
+                    <Anchor point="TOPRIGHT" relativeTo="$parentshowTooltipsStr" relativePoint="TOPLEFT">
+                        <Offset><AbsDimension x="-2.5" y="5" /></Offset>
+                    </Anchor>
+                </Anchors>
+            </CheckButton>
+            <CheckButton name="$parentminimapButton" inherits="KRTConfigCheckButtonTemplate">
+                <Anchors>
+                    <Anchor point="TOPRIGHT" relativeTo="$parentminimapButtonStr" relativePoint="TOPLEFT">
+                        <Offset><AbsDimension x="-2.5" y="5" /></Offset>
+                    </Anchor>
+                </Anchors>
+            </CheckButton>
+            <Slider name="$parentcountdownDuration" inherits="OptionsSliderTemplate" minValue="5.0" maxValue="60.0" defaultValue="5.0" valueStep="5.0">
+                <Size><AbsDimension x="180" y="15" /></Size>
+                <Anchors><Anchor point="BOTTOM"><Offset><AbsDimension x="0" y="95" /></Offset></Anchor></Anchors>
+                <Scripts>
+                    <OnLoad>
+                        getglobal(self:GetName() .. "Low"):SetText("5")
+                        getglobal(self:GetName() .. "High"):SetText("60")
+                    </OnLoad>
+                    <OnValueChanged>KRT.Config:OnClick(self)</OnValueChanged>
+                </Scripts>
+            </Slider>
+            <Button name="$parentDefaultsBtn" inherits="KRTButtonTemplate" text="Defaults">
+                <Size><AbsDimension x="105" y="25" /></Size>
+                <Anchors>
+                    <Anchor point="BOTTOMLEFT" relativePoint="BOTTOMLEFT">
+                        <Offset><AbsDimension x="10" y="47.5" /></Offset>
+                    </Anchor>
+                </Anchors>
+            </Button>
+            <Button name="$parentCloseBtn" inherits="KRTButtonTemplate" text="CLOSE">
+                <Size><AbsDimension x="105" y="25" /></Size>
+                <Anchors>
+                    <Anchor point="BOTTOMRIGHT" relativePoint="BOTTOMRIGHT">
+                        <Offset><AbsDimension x="-10" y="47.5" /></Offset>
+                    </Anchor>
+                </Anchors>
+                <Scripts><OnClick>self:GetParent():Hide()</OnClick></Scripts>
+            </Button>
+        </Frames>
+        <Scripts><OnLoad>KRT.Config:OnLoad(self)</OnLoad></Scripts>
+    </Frame>
 	<!-- ====== End of Config Frame ====== -->
 
 	<!-- ====== Start of LFM Spam Frame ====== -->
@@ -935,7 +953,7 @@
 	</Button>
 	<!-- The Frame: Loot Manager -->
 	<Frame name="KRTMaster" inherits="KRTFrameTemplate">
-		<Size><AbsDimension x="230" y="420" /></Size>
+		<Size><AbsDimension x="230" y="480" /></Size>
 		<Layers>
 			<Layer level="ARTWORK">
 				<FontString name="$parentName" inherits="KRTFontStringGray" text="No item selected" justifyH="LEFT" justifyV="MIDDLE">
@@ -1010,7 +1028,7 @@
 				<Scripts><OnEnterPressed>self:ClearFocus()</OnEnterPressed></Scripts>
 			</EditBox>
 			<Button name="$parentMSBtn" inherits="KRTButtonTemplate" text="MS">
-				<Size><AbsDimension x="30" y="25" /></Size>
+				<Size><AbsDimension x="28" y="25" /></Size>
 				<Anchors>
 					<Anchor point="TOPLEFT" relativeTo="$parentItemBtn" relativePoint="BOTTOMLEFT">
 						<Offset><AbsDimension x="-3" y="-5" /></Offset>
@@ -1019,7 +1037,7 @@
 				<Scripts><OnClick>KRT.Master:BtnMS(self, button)</OnClick></Scripts>
 			</Button>
 			<Button name="$parentOSBtn" inherits="KRTButtonTemplate" text="OS">
-				<Size><AbsDimension x="30" y="25" /></Size>
+				<Size><AbsDimension x="28" y="25" /></Size>
 				<Anchors>
 					<Anchor point="LEFT" relativeTo="$parentMSBtn" relativePoint="RIGHT">
 						<Offset><AbsDimension x="5" y="0" /></Offset>
@@ -1027,17 +1045,26 @@
 				</Anchors>
 				<Scripts><OnClick>KRT.Master:BtnOS(self, button)</OnClick></Scripts>
 			</Button>
+            <Button name="$parentSRBtn" inherits="KRTButtonTemplate" text="SR">
+                <Size><AbsDimension x="28" y="25" /></Size>
+                <Anchors>
+                    <Anchor point="LEFT" relativeTo="$parentOSBtn" relativePoint="RIGHT">
+                        <Offset><AbsDimension x="5" y="0" /></Offset>
+                    </Anchor>
+                </Anchors>
+                <Scripts><OnClick>KRT.Master:BtnSR(self, button)</OnClick></Scripts>
+            </Button>			
 			<Button name="$parentFreeBtn" inherits="KRTButtonTemplate" text="Free">
-				<Size><AbsDimension x="50" y="25" /></Size>
+				<Size><AbsDimension x="35" y="25" /></Size>
 				<Anchors>
-					<Anchor point="LEFT" relativeTo="$parentOSBtn" relativePoint="RIGHT">
+					<Anchor point="LEFT" relativeTo="$parentSRBtn" relativePoint="RIGHT">
 						<Offset><AbsDimension x="5" y="0" /></Offset>
 					</Anchor>
 				</Anchors>
 				<Scripts><OnClick>KRT.Master:BtnFree(self, button)</OnClick></Scripts>
 			</Button>
 			<Button name="$parentCountdownBtn" inherits="KRTButtonTemplate" text="Countdown">
-				<Size><AbsDimension x="85" y="25" /></Size>
+				<Size><AbsDimension x="70" y="25" /></Size>
 				<Anchors>
 					<Anchor point="LEFT" relativeTo="$parentFreeBtn" relativePoint="RIGHT">
 						<Offset><AbsDimension x="5" y="0" /></Offset>
@@ -1051,7 +1078,7 @@
 						<Offset><AbsDimension x="15" y="-145" /></Offset>
 					</Anchor>
 					<Anchor point="BOTTOMRIGHT">
-						<Offset><AbsDimension x="-35" y="135" /></Offset>
+						<Offset><AbsDimension x="-35" y="165" /></Offset>
 					</Anchor>
 				</Anchors>
 			</ScrollFrame>
@@ -1130,6 +1157,24 @@
 					</Anchor>
 				</Anchors>
 			</Frame>
+			<Button name="$parentImportReservesBtn" inherits="KRTButtonTemplate" text="Import Reserve">
+			  <Size><AbsDimension x="105" y="25"/></Size>
+			  <Anchors>
+					<Anchor point="BOTTOMLEFT">
+						<Offset><AbsDimension x="10" y="10"/></Offset>
+					</Anchor>
+			  </Anchors>
+			  <Scripts><OnClick>KRT.Master:BtnImportReserves(self, button)</OnClick></Scripts>
+			</Button>
+			<Button name="$parentOpenReservesBtn" inherits="KRTButtonTemplate" text="Open List">
+			  <Size><AbsDimension x="105" y="25"/></Size>
+				<Anchors>
+					<Anchor point="BOTTOMRIGHT">
+						<Offset><AbsDimension x="-10" y="10"/></Offset>
+					</Anchor>
+				</Anchors>
+			  <Scripts><OnClick>KRT.Master:BtnOpenReserves(self, button)</OnClick></Scripts>
+			</Button>
 		</Frames>
 		<Scripts><OnLoad>KRT.Master:OnLoad(self)</OnLoad></Scripts>
 	</Frame>
@@ -1276,6 +1321,144 @@
 		<Scripts><OnLoad>KRT.Changes:OnLoad(self)</OnLoad></Scripts>
 	</Frame>
 	<!-- ====== End of Changes ====== -->
+
+	<!-- ==================== Reserve List Window ==================== -->
+	<Frame name="KRTReserveListFrame" inherits="KRTFrameTemplate" toplevel="true" hidden="true" frameStrata="MEDIUM">
+        <Size><AbsDimension x="368" y="460"/></Size>
+        <Anchors><Anchor point="CENTER"/></Anchors>
+        <Backdrop bgFile="Interface\DialogFrame\UI-DialogBox-Background" tile="true">
+            <TileSize><AbsValue val="6" /></TileSize>
+            <EdgeSize><AbsValue val="6" /></EdgeSize>
+            <BackgroundInsets>
+                <AbsInset top="3" right="3" bottom="2" left="2" />
+            </BackgroundInsets>
+        </Backdrop>
+		<Layers>
+			<Layer level="ARTWORK">
+				<FontString name="$parentTitle" inherits="GameFontNormalLarge" text="Elenco Riserve">
+					<Anchors>
+						<Anchor point="TOP" relativePoint="TOP">
+							<Offset><AbsDimension x="0" y="-12"/></Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+
+		<Frames>
+			<!-- ScrollFrame con ScrollChild -->
+			<ScrollFrame name="$parentScrollFrame" inherits="KRTScrolLFrameTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT">
+						<Offset><AbsDimension x="16" y="-40"/></Offset>
+					</Anchor>
+					<Anchor point="BOTTOMRIGHT">
+						<Offset><AbsDimension x="-32" y="60"/></Offset>
+					</Anchor>
+				</Anchors>
+				<ScrollChild>
+					<Frame name="KRTReserveListFrameScrollChild">
+						<Size><AbsDimension x="1" y="1"/></Size>
+					</Frame>
+				</ScrollChild>
+			</ScrollFrame>
+
+			<!-- Pulsante: Clear -->
+            <Button name="$parentClearButton" inherits="KRTButtonTemplate" text="Clear List">
+                <Size><AbsDimension x="100" y="24"/></Size>
+                <Anchors>
+                    <Anchor point="BOTTOMLEFT" relativePoint="BOTTOMLEFT">
+                        <Offset><AbsDimension x="16" y="20"/></Offset>
+                    </Anchor>
+                </Anchors>
+            </Button>
+
+			<!-- Pulsante: Query Server -->
+            <Button name="$parentQueryButton" inherits="KRTButtonTemplate" text="Query Server">
+                <Size><AbsDimension x="120" y="24"/></Size>
+                <Anchors>
+                    <Anchor point="BOTTOM" relativePoint="BOTTOM">
+                        <Offset><AbsDimension x="0" y="20"/></Offset> </Anchor>
+                </Anchors>
+            </Button>
+
+			<!-- Pulsante: Chiudi -->
+            <Button name="$parentCloseButton" inherits="KRTButtonTemplate" text="Chiudi">
+                <Size><AbsDimension x="80" y="24"/></Size>
+                <Anchors>
+                    <Anchor point="BOTTOMRIGHT" relativePoint="BOTTOMRIGHT">
+                        <Offset><AbsDimension x="-16" y="20"/></Offset>
+                    </Anchor>
+                </Anchors>
+            </Button>
+		</Frames>
+
+		<Scripts>
+			<OnLoad>
+				KRT.Reserves:OnLoad(self)
+			</OnLoad>
+			<OnDragStart>
+				self:StartMoving()
+			</OnDragStart>
+			<OnDragStop>
+				self:StopMovingOrSizing()
+			</OnDragStop>
+		</Scripts>
+	</Frame>
+	<!-- ==================== End Reserve List Window ==================== -->
+
+	<!-- ====== Start of Reserve Import Window ====== -->
+	<Frame name="KRTImportWindow" inherits="KRTFrameTemplate" toplevel="true" hidden="true" frameStrata="DIALOG">
+		<Size><AbsDimension x="400" y="300" /></Size>
+		<Anchors><Anchor point="CENTER" /></Anchors>
+        <Backdrop bgFile="Interface\DialogFrame\UI-DialogBox-Background" tile="true">
+            <TileSize><AbsValue val="6" /></TileSize>
+            <EdgeSize><AbsValue val="6" /></EdgeSize>
+            <BackgroundInsets>
+                <AbsInset top="3" right="3" bottom="2" left="2" />
+            </BackgroundInsets>
+        </Backdrop>
+		<Frames>
+			<!-- Multiline EditBox for CSV -->
+            <ScrollFrame name="KRTImportScrollFrame" inherits="KRTScrolLFrameTemplate">
+                <Size><AbsDimension x="340" y="180" /></Size>
+                <Anchors>
+                    <Anchor point="TOP" relativePoint="TOP"><Offset><AbsDimension x="-5" y="-30" /></Offset></Anchor>
+                </Anchors>
+                <ScrollChild>
+                    <EditBox name="KRTImportEditBox" multiline="true" autoFocus="false" inherits="InputBoxTemplate">
+                        <Size><AbsDimension x="320" y="180" /></Size>
+                        <Scripts>
+                            <OnEscapePressed>self:ClearFocus()</OnEscapePressed>
+                        </Scripts>
+                    </EditBox>
+                </ScrollChild>
+            </ScrollFrame>
+
+			<!-- Import Button -->
+            <Button name="KRTImportConfirmButton" inherits="KRTButtonTemplate" text="Import">
+                <Size><AbsDimension x="100" y="24" /></Size>
+                <Anchors><Anchor point="BOTTOMLEFT"><Offset><AbsDimension x="20" y="20" /></Offset></Anchor></Anchors>
+                <Scripts>
+                    <OnClick>
+                        local csv = KRTImportEditBox:GetText()
+                        if csv and csv ~= "" then
+                            KRT.Reserves:ParseCSV(csv)
+                            KRTImportWindow:Hide()
+                        end
+                    </OnClick>
+                </Scripts>
+            </Button>
+
+			<!-- Cancel Button -->
+            <Button name="KRTImportCancelButton" inherits="KRTButtonTemplate" text="Close">
+                <Size><AbsDimension x="100" y="24" /></Size>
+                <Anchors><Anchor point="BOTTOMRIGHT"><Offset><AbsDimension x="-20" y="20" /></Offset></Anchor></Anchors>
+                <Scripts><OnClick>KRTImportWindow:Hide()</OnClick></Scripts>
+            </Button>
+		</Frames>
+	</Frame>
+	<!-- ====== End of Reserve Import Window ====== -->
 
 	<!-- ====== Start of Loot Bans Frame ====== -->
 	<!-- ====== End of Loot Bans Frame ====== -->

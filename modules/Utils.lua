@@ -179,6 +179,23 @@ function Utils.returnIf(cond, a, b)
 end
 
 -------------------
+-- Event Manager --
+-------------------
+
+function Utils.TriggerEvent(event, ...)
+    if addon.callbacks[event] then
+        for _, func in ipairs(addon.callbacks[event]) do
+            func(...)
+        end
+    end
+end
+
+function Utils.RegisterEvent(event, func)
+    if not addon.callbacks[event] then addon.callbacks[event] = {} end
+    tinsert(addon.callbacks[event], func)
+end
+
+-------------------
 -- Tasks Manager --
 -------------------
 do
@@ -340,11 +357,8 @@ do
 	end
 
 	function Utils.print_color(r, g, b, ...)
-		local opt = {}
-		opt.r = r
-		opt.g = g
-		opt.b = b
-		return Utils._print(opt, ...)
+		local opt = { r = r, g = g, b = b }
+		return print(opt, ...)
 	end
 
 	function Utils.print_gold(...)
@@ -403,7 +417,7 @@ function Utils.whisper(target, msg)
 		return true
 	end
 end
-local BNSendWhisper = Utils.whisper
+-- local BNSendWhisper = Utils.whisper --
 
 -- Returns the current UTC date and time in seconds:
 function Utils.getUTCTimestamp()
@@ -475,6 +489,7 @@ function Utils.GetServerOffset()
 	end
 	return offset
 end
+
 
 --[==[ Base64 encode/decode ]==]--
 do
