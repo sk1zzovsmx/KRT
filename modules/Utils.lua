@@ -179,23 +179,6 @@ function Utils.returnIf(cond, a, b)
 end
 
 -------------------
--- Event Manager --
--------------------
-
-function Utils.TriggerEvent(event, ...)
-    if addon.callbacks[event] then
-        for _, func in ipairs(addon.callbacks[event]) do
-            func(...)
-        end
-    end
-end
-
-function Utils.RegisterEvent(event, func)
-    if not addon.callbacks[event] then addon.callbacks[event] = {} end
-    tinsert(addon.callbacks[event], func)
-end
-
--------------------
 -- Tasks Manager --
 -------------------
 do

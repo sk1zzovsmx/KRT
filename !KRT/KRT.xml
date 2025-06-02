@@ -1323,7 +1323,7 @@
 	<!-- ====== End of Changes ====== -->
 
 	<!-- ==================== Reserve List Window ==================== -->
-	<Frame name="KRTReserveListFrame" inherits="KRTFrameTemplate" toplevel="true" hidden="true" frameStrata="MEDIUM">
+    <Frame name="KRTReserveListFrame" inherits="KRTFrameTemplate" toplevel="true" hidden="true" frameStrata="MEDIUM">
         <Size><AbsDimension x="368" y="460"/></Size>
         <Anchors><Anchor point="CENTER"/></Anchors>
         <Backdrop bgFile="Interface\DialogFrame\UI-DialogBox-Background" tile="true">
@@ -1333,18 +1333,6 @@
                 <AbsInset top="3" right="3" bottom="2" left="2" />
             </BackgroundInsets>
         </Backdrop>
-		<Layers>
-			<Layer level="ARTWORK">
-				<FontString name="$parentTitle" inherits="GameFontNormalLarge" text="Elenco Riserve">
-					<Anchors>
-						<Anchor point="TOP" relativePoint="TOP">
-							<Offset><AbsDimension x="0" y="-12"/></Offset>
-						</Anchor>
-					</Anchors>
-				</FontString>
-			</Layer>
-		</Layers>
-
 		<Frames>
 			<!-- ScrollFrame con ScrollChild -->
 			<ScrollFrame name="$parentScrollFrame" inherits="KRTScrolLFrameTemplate">
@@ -1362,8 +1350,6 @@
 					</Frame>
 				</ScrollChild>
 			</ScrollFrame>
-
-			<!-- Pulsante: Clear -->
             <Button name="$parentClearButton" inherits="KRTButtonTemplate" text="Clear List">
                 <Size><AbsDimension x="100" y="24"/></Size>
                 <Anchors>
@@ -1372,8 +1358,6 @@
                     </Anchor>
                 </Anchors>
             </Button>
-
-			<!-- Pulsante: Query Server -->
             <Button name="$parentQueryButton" inherits="KRTButtonTemplate" text="Query Server">
                 <Size><AbsDimension x="120" y="24"/></Size>
                 <Anchors>
@@ -1381,9 +1365,7 @@
                         <Offset><AbsDimension x="0" y="20"/></Offset> </Anchor>
                 </Anchors>
             </Button>
-
-			<!-- Pulsante: Chiudi -->
-            <Button name="$parentCloseButton" inherits="KRTButtonTemplate" text="Chiudi">
+            <Button name="$parentCloseButton" inherits="KRTButtonTemplate" text="Close">
                 <Size><AbsDimension x="80" y="24"/></Size>
                 <Anchors>
                     <Anchor point="BOTTOMRIGHT" relativePoint="BOTTOMRIGHT">

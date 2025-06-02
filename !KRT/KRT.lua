@@ -2197,6 +2197,13 @@ do
     addon.Reserves = {}
     local Reserves = addon.Reserves
 
+    -- New local variables for UI management
+    local frameName             -- Stores the name of the main Reserves UI frame
+    local LocalizeUIFrame       -- Function to localize UI elements
+    local localized = false     -- Flag to ensure localization runs once
+    local UpdateUIFrame         -- Function for periodic UI updates
+    local updateInterval = 0.05 -- Interval for UI updates (e.g., 20 times per second)
+
     local reservesData = {}
     local reserveListFrame, scrollFrame, scrollChild
     local reserveItemRows, rowsByItemID = {}, {}
@@ -2261,14 +2268,19 @@ do
         if _G["KRTImportEditBox"] then
             _G["KRTImportEditBox"]:SetText("")
         end
+        -- Set the title for the Import List Window using the localized string
+        _G[frame:GetName().."Title"]:SetText(format(titleString, L.StrImportReservesTitle))
     end
 
     function Reserves:OnLoad(frame)
         reserveListFrame = frame
+        frameName = frame:GetName() -- Assign frameName here
 
         frame:RegisterForDrag("LeftButton")
         frame:SetScript("OnDragStart", frame.StartMoving)
         frame:SetScript("OnDragStop", frame.StopMovingOrSizing)
+        -- Set the OnUpdate script for periodic UI updates
+        frame:SetScript("OnUpdate", UpdateUIFrame)
 
         scrollFrame = frame.ScrollFrame or _G["KRTReserveListFrameScrollFrame"]
         scrollChild = scrollFrame and scrollFrame.ScrollChild or _G["KRTReserveListFrameScrollChild"]
@@ -2286,6 +2298,9 @@ do
             end
         end
 
+        -- Call localization when the frame loads
+        LocalizeUIFrame()
+
         -- Handle delayed item info queries
         local refreshFrame = CreateFrame("Frame")
         refreshFrame:RegisterEvent("GET_ITEM_INFO_RECEIVED")
@@ -2298,6 +2313,68 @@ do
                 end
             end
         end)
+        -- Set the title for the Reserve List Window using the localized string
+        -- This line should be here, after frameName is set and LocalizeUIFrame is called,
+        -- or handled by LocalizeUIFrame itself. I'll put it in LocalizeUIFrame.
+    end
+
+    ----------------------------------------------------------------
+    -- Localization and UI Update Functions
+    ----------------------------------------------------------------
+
+    -- Localizes all text elements within the Reserves UI frame.
+    -- This function should be called once on load, or when locale changes.
+    function LocalizeUIFrame()
+        if localized then return end -- Only localize once per session/reset
+
+        -- Set the main window title
+        if frameName then
+            _G[frameName.."Title"]:SetText(format(titleString, L.StrRaidReserves))
+        end
+
+        -- Localize buttons (example, adapt to your actual button names)
+        -- if _G["KRTReserveListFrameClearButton"] then
+        --     _G["KRTReserveListFrameClearButton"]:SetText(L.BtnClearList)
+        -- end
+        -- if _G["KRTReserveListFrameQueryButton"] then
+        --     _G["KRTReserveListFrameQueryButton"]:SetText(L.BtnQueryServer)
+        -- end
+        -- if _G["KRTReserveListFrameCloseButton"] then
+        --     _G["KRTReserveListFrameCloseButton"]:SetText(L.BtnClose)
+        -- end
+        -- if _G["KRTImportConfirmButton"] then
+        --     _G["KRTImportConfirmButton"]:SetText(L.BtnImport)
+        -- end
+        -- if _G["KRTImportCancelButton"] then
+        --     _G["KRTImportCancelButton"]:SetText(L.BtnClose)
+        -- end
+
+        localized = true
+    end
+
+    -- Periodically updates the UI elements based on addon state.
+    -- This is called by the frame's OnUpdate script.
+    function UpdateUIFrame(self, elapsed)
+        LocalizeUIFrame() -- Ensure localization runs on first update
+
+        -- Use Utils.periodic to control update frequency
+        if Utils.periodic(self, frameName, updateInterval, elapsed) then
+            -- Example: Enable/disable the "Clear List" button based on data presence
+            local clearButton = _G[frameName.."ClearButton"]
+            if clearButton then
+                Utils.enableDisable(clearButton, Reserves:HasData())
+            end
+
+            -- Example: Enable/disable the "Query Server" button based on missing items
+            local queryButton = _G[frameName.."QueryButton"]
+            if queryButton then
+                -- This would require a function to check for missing items,
+                -- or you can simplify based on whether data exists.
+                Utils.enableDisable(queryButton, Reserves:HasData())
+            end
+
+            -- You can add more dynamic UI updates here (e.g., visibility of elements)
+        end
     end
 
     ----------------------------------------------------------------
@@ -2459,7 +2536,25 @@ do
         end
 
         table.sort(entries, function(a, b)
-            return a.rawID ~= b.rawID and a.rawID < b.rawID or a.player:lower() < b.player:lower()
+            -- Defensive checks for nil values
+            if not a or not b then
+                return false
+            end
+
+            -- Safely get rawID and player names, handling potential nils
+            local aRawID = a.rawID or 0
+            local bRawID = b.rawID or 0
+
+            local aPlayerLower = (a.player and a.player:lower()) or ""
+            local bPlayerLower = (b.player and b.player:lower()) or ""
+
+            -- Primary sort: by rawID
+            if aRawID ~= bRawID then
+                return aRawID < bRawID
+            end
+
+            -- Secondary sort: by player name (if rawIDs are equal)
+            return aPlayerLower < bPlayerLower
         end)
 
         local yOffset, rowHeight = 0, 34
