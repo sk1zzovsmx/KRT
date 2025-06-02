@@ -82,7 +82,7 @@ Going from top to bottom, here are the different buttons you will see on the mai
 - **Roll**: easy, if you want to roll, you can do the slash roll or hit this button.
 - **Clear** / **Allow**: sometimes you want to clear the rolls and start over, this is the button for it. as for the second part, if you choose to ignore rolls after countdown, you won't see them there, so you simply hit the button and tell people to roll.
 - **Hold** / **Bank** / **DE**: we talked earlier about loot people right? These are the buttons to assign the loot to them.
-- **Import Reserve** / **Open List **: add the function to import CSV text from SoftReserve website. Open the window list of the reserve.
+- **Import Reserve** / **Open List**: add the function to import CSV text from SoftReserve website. Open the window list of the reserve.
 
   ![image](https://github.com/user-attachments/assets/5eee47ce-9a60-4794-8717-46c4092aa8e1)
   ![image](https://github.com/user-attachments/assets/54a8fc6c-062b-434f-a63d-780c17850475)
