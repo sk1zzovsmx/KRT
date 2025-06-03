@@ -2651,6 +2651,7 @@ do
 
         local nameText = row:CreateFontString(nil, "OVERLAY", "GameFontNormal")
         nameText:SetPoint("LEFT", icon, "RIGHT", 8, 0)
+        nameText:SetText(info.itemLink or info.itemName or ("[Item " .. info.rawID .. " not yet loaded]"))
 
         local playerText = row:CreateFontString(nil, "OVERLAY", "GameFontHighlightSmall")
         playerText:SetPoint("RIGHT", row, "RIGHT", -4, 0)
