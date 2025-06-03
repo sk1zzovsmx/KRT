@@ -5027,20 +5027,30 @@ do
     -- =================== --
 
     function addon:Log(iID, looter, rollType, rollValue)
-        if #raidLoot >= 0 and raidLoot[iID] then
-            if looter and looter ~= "" then
-                raidLoot[iID].looter = looter
-                fetched = false
-            end
-            if tonumber(rollType) ~= nil then
-				raidLoot[iID].rollType  = tonumber(rollType)
-                fetched = false
-            end
-            if tonumber(rollValue) ~= nil then
-                raidLoot[iID].rollValue = tonumber(rollValue)
-                fetched = false
-            end
+        local raidID = addon.Logger and addon.Logger.selectedRaid
+        if not raidID or not KRT_Raids or not KRT_Raids[raidID] then
+            addon:PrintError("Cannot log loot: Invalid or missing raid.")
+            return
         end
+
+        local lootList = KRT_Raids[raidID].loot
+        if not lootList or not lootList[iID] then
+            addon:PrintError("Cannot log loot: Entry does not exist at index " .. tostring(iID))
+            return
+        end
+
+        local entry = lootList[iID]
+        if looter and looter ~= "" then
+            entry.looter = looter
+        end
+        if tonumber(rollType) ~= nil then
+            entry.rollType = tonumber(rollType)
+        end
+        if tonumber(rollValue) ~= nil then
+            entry.rollValue = tonumber(rollValue)
+        end
+
+        fetched = false -- to refresh display on next update
     end
 end
 
