@@ -835,7 +835,7 @@ do
 					if addon.options.countdownSimpleRaidMsg then
 						channel = "RAID" -- Force RAID if countdownSimpleRaidMsg is true
 					-- Use RAID_WARNING if leader/officer AND useRaidWarning is true
-					elseif IsRaidLeader() or IsRaidOfficer() and addon.options.useRaidWarning then
+					elseif addon.options.useRaidWarning and (IsRaidLeader() or IsRaidOfficer()) then
 						channel = "RAID_WARNING"
 					else
 						channel = "RAID" -- Fallback to RAID
@@ -843,7 +843,7 @@ do
 				else
 					-- If it's a non-countdown message:
 					-- Use RAID_WARNING only if leader/officer AND useRaidWarning is true
-					if IsRaidLeader() or IsRaidOfficer() and addon.options.useRaidWarning then
+					if (IsRaidLeader() or IsRaidOfficer()) and addon.options.useRaidWarning then
 						channel = "RAID_WARNING"
 					else
 						channel = "RAID" -- Fallback to RAID
@@ -1052,15 +1052,20 @@ do
 	-- Perform a RandomRoll:
 	function addon:Roll(btn)
 		local itemId = addon:GetCurrentRollItemID()
-            if not itemId then return end
+		if not itemId then return end
 
-            playerRollTracker[itemId] = playerRollTracker[itemId] or 0
-            local allowed = addon.Reserves:GetReserveCountForItem(itemId, UnitName("player"))
+		playerRollTracker[itemId] = playerRollTracker[itemId] or 0
+		local name = UnitName("player")
+		local allowed = 1
 
-            if playerRollTracker[itemId] >= allowed then
-                addon:Print(L.ChatOnlyRollOnce) -- or whisper yourself?
-                return
-            end
+		if currentRollType == rollTypes.reserved then
+			allowed = addon.Reserves:GetReserveCountForItem(itemId, name)
+		end
+
+		if playerRollTracker[itemId] >= allowed then
+			addon:Print(L.ChatOnlyRollOnce)
+			return
+		end
 
 		RandomRoll(1, 100)
 		playerRollTracker[itemId] = playerRollTracker[itemId] + 1
@@ -1090,22 +1095,32 @@ do
 				return
 			end
 
-            -- Determine the current item ID (for SR logic)
-            local itemId = self:GetCurrentRollItemID()
-            if not itemId then
-                addon:PrintError("Item ID could not be determined. Roll tracking may be inaccurate.")
-            end
+			-- Determine the current item ID
+			local itemId = self:GetCurrentRollItemID()
+			if not itemId then
+				addon:PrintError("Item ID could not be determined. Roll tracking may be inaccurate.")
+				return
+			end
 
-            -- Check roll eligibility
-            if self:DidRoll(itemId, player) then
-                if not Utils.checkEntry(rerolled, player) then
-                    Utils.whisper(player, L.ChatOnlyRollOnce)
-                    tinsert(rerolled, player)
-                end
-                return
-            end
+			-- Determine allowed roll count
+			local allowed = 1
+			if currentRollType == rollTypes.reserved then
+				allowed = addon.Reserves:GetReserveCountForItem(itemId, player)
+			end
 
-            -- Add the valid roll
+			-- Check how many times the player has rolled for this item
+			itemRollTracker[itemId] = itemRollTracker[itemId] or {}
+			local used = itemRollTracker[itemId][player] or 0
+
+			if used >= allowed then
+				if not Utils.checkEntry(rerolled, player) then
+					Utils.whisper(player, L.ChatOnlyRollOnce)
+					tinsert(rerolled, player)
+				end
+				return
+			end
+
+			-- Add the valid roll
 			AddRoll(player, roll, itemId)
 		end
 	end
@@ -1126,7 +1141,7 @@ do
             -- fallback to 1-roll limit
 			for i = 1, rollsCount do
 				if rollsTable[i].name == name then
-				return true
+					return true
 				end
 			end
 			return false
@@ -1134,8 +1149,16 @@ do
 
 		itemRollTracker[itemId] = itemRollTracker[itemId] or {}
 		local used = itemRollTracker[itemId][name] or 0
-		local allowed = addon.Reserves:GetReserveCountForItem(itemId, name)
-		return used >= allowed
+
+		if currentRollType == rollTypes.reserved then
+			local allowed = addon.Reserves:GetReserveCountForItem(itemId, name)
+			if allowed <= 0 then
+				return false
+			end
+			return used >= allowed
+		else
+			return used >= 1
+		end
 	end
 
 	-- Returns the highest roll:
@@ -1247,6 +1270,7 @@ do
 
 		local lastRollIndex = 0
 		local lastRollValue = addon.options.sortAscending and 0 or 1000001
+		local itemId = addon:GetCurrentRollItemID()
 
 		for i = 1, rollsCount do
 			local highestRollIndex = 0
@@ -1254,39 +1278,82 @@ do
 
 			for rollIndex = 1, rollsCount do
 				local rollValue = GetPlayerRoll(rollIndex)
-				if ((LessThan(rollIndex, rollValue, lastRollIndex, lastRollValue) and not addon.options.sortAscending) or (GreaterThan(rollIndex, rollValue, lastRollIndex, lastRollValue) and addon.options.sortAscending)) then
-					if ((GreaterThan(rollIndex, rollValue, highestRollIndex, highestRollValue) and not addon.options.sortAscending) or (LessThan(rollIndex, rollValue, highestRollIndex, highestRollValue) and addon.options.sortAscending)) then
+				if ((LessThan(rollIndex, rollValue, lastRollIndex, lastRollValue) and not addon.options.sortAscending) or
+					(GreaterThan(rollIndex, rollValue, lastRollIndex, lastRollValue) and addon.options.sortAscending)) then
+					if ((GreaterThan(rollIndex, rollValue, highestRollIndex, highestRollValue) and not addon.options.sortAscending) or
+						(LessThan(rollIndex, rollValue, highestRollIndex, highestRollValue) and addon.options.sortAscending)) then
 						highestRollIndex = rollIndex
 						highestRollValue = rollValue
 					end
 				end
 			end
+
 			-- Update indexes:
 			lastRollIndex = highestRollIndex
 			lastRollValue = highestRollValue
+
 			-- Show player button:
 			local btnName = frameName.."PlayerBtn"..lastRollIndex
 			local btn = _G[btnName] or CreateFrame("Button", btnName, scrollChild, "KRTSelectPlayerTemplate")
 			btn:SetID(lastRollIndex)
 			btn:Show()
-			-- Display the class-colored name:
+
+			-- Player info:
 			local name = GetPlayerName(lastRollIndex)
 			local nameStr = _G[btnName.."Name"]
 			local _, class = UnitClass(name)
 			class = class and tostring(class):upper() or "UNKNOWN"
-			local r, g, b = addon:GetClassColor(class)
+
+			local reserved = addon.Reserves:GetReserveCountForItem(itemId, name) > 0
+			if reserved then
+				-- Blue highlight for reserved rollers
+				nameStr:SetVertexColor(0.4, 0.6, 1.0)
+			else
+				local r, g, b = addon:GetClassColor(class)
+				nameStr:SetVertexColor(r, g, b)
+			end
 			nameStr:SetText(name)
-			nameStr:SetVertexColor(r, g, b)
+
 			-- Display the roll:
 			local roll = GetPlayerRoll(lastRollIndex)
 			local rollStr = _G[btnName.."Roll"]
-			rollStr:SetText(roll)
+
+			if reserved then
+				local count = addon.Reserves:GetReserveCountForItem(itemId, name)
+				local used = itemRollTracker[itemId] and itemRollTracker[itemId][name] or 0
+				if count > 1 then
+					rollStr:SetText(roll.." ("..used.."/"..count..")")
+				else
+					rollStr:SetText(roll)
+				end
+			else
+				rollStr:SetText(roll)
+			end
+
 			-- Display the star if it's highest/selected:
 			local star = _G[btnName.."Star"]
-			Utils.showHide(star, name == winner)
+			local showStar = false
+			if currentRollType == rollTypes.reserved and reserved then
+				-- Calcola il massimo roll tra riservati
+				local maxSRRoll = -1
+				for j = 1, rollsCount do
+					local pName = GetPlayerName(j)
+					if addon.Reserves:GetReserveCountForItem(itemId, pName) > 0 then
+						local pRoll = GetPlayerRoll(j)
+						if pRoll > maxSRRoll then
+							maxSRRoll = pRoll
+						end
+					end
+				end
+				-- Se il roll attuale corrisponde al massimo, mostra la stella
+				showStar = (roll == maxSRRoll)
+			end
+			Utils.showHide(star, showStar)
+
 			-- Position the button:
 			btn:SetPoint("TOPLEFT", scrollChild, "TOPLEFT", 0, -totalHeight)
 			btn:SetPoint("RIGHT", scrollChild, "RIGHT", 0, 0)
+
 			-- Update the scroll frame height:
 			totalHeight = totalHeight + btn:GetHeight()
 		end
@@ -1578,32 +1645,31 @@ do
 			currentRollType = rollType
 			addon:ClearRolls()
 			addon:RecordRolls(true)
+
 			local itemLink = GetItemLink()
+			local itemID = tonumber(string.match(itemLink or "", "item:(%d+)"))
 			local message = ""
+
 			if rollType == rollTypes.reserved and addon.Reserves and addon.Reserves.FormatReservedPlayersLine then
 				local srList = addon.Reserves:FormatReservedPlayersLine(itemID)
-				-- If the list is empty, omit the name part in the format
-				if srList == "" then
-					message = L.ChatRollSR:format("", itemLink)
+				local suff = addon.options.sortAscending and "Low" or "High"
+				if itemCount > 1 then
+					message = L[chatMsg.."Multiple"..suff]:format(srList, itemLink, itemCount)
 				else
-					message = L.ChatRollSR:format(srList, itemLink)
+					message = L[chatMsg]:format(srList, itemLink)
 				end
-			else -- This 'else' belongs to the 'if rollType == rollTypes.reserved'
+			else
 				if itemCount > 1 then
 					local suff = addon.options.sortAscending and "Low" or "High"
 					message = L[chatMsg.."Multiple"..suff]:format(itemLink, itemCount)
 				else
 					message = L[chatMsg]:format(itemLink)
 				end
-			end -- This 'end' was missing
-			
+			end
+
 			addon:Announce(message)
 			_G[frameName.."ItemCount"]:ClearFocus()
 
-			-- Prepare current item so we change change
-			-- the loot history details at the trade:
-			local itemID = tonumber(string.match(itemLink or "", "item:(%d+)"))
-			itemID = tonumber(itemID)
 			currentRollItem = addon.Raid:GetLootID(itemID)
 		end
 	end
@@ -1819,12 +1885,13 @@ do
 			Utils.enableDisable(_G[frameName.."OSBtn"], lootCount >= 1)
 			Utils.enableDisable(_G[frameName.."SRBtn"], lootCount >= 1 and addon.Reserves:HasData())
 			Utils.enableDisable(_G[frameName.."FreeBtn"], lootCount >= 1)
+			Utils.enableDisable(_G[frameName.."CountdownBtn"], lootCount >= 1 and ItemExists())
 			Utils.enableDisable(_G[frameName.."HoldBtn"], lootCount >= 1)
 			Utils.enableDisable(_G[frameName.."BankBtn"], lootCount >= 1)
 			Utils.enableDisable(_G[frameName.."DisenchantBtn"], lootCount >= 1)
 			Utils.enableDisable(_G[frameName.."AwardBtn"], (lootCount >= 1 and rollsCount >= 1))
 			Utils.enableDisable(_G[frameName.."OpenReservesBtn"], addon.Reserves:HasData())
-			Utils.enableDisable(_G[frameName.."ImportReservesBtn"], true)
+			Utils.enableDisable(_G[frameName.."ImportReservesBtn"], not addon.Reserves:HasData())
 
 			local rollType, record, canRoll, rolled = addon:RollStatus()
 			Utils.enableDisable(_G[frameName.."RollBtn"], record and canRoll and rolled == false)
