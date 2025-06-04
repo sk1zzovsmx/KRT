@@ -821,35 +821,34 @@ do
 	-- Function used for various announcements:
 	function addon:Announce(text, channel)
 		if not channel then
-			channel = channel or "SAY"
-			-- Switch to party mode if we're in a party:
-			if self:IsInParty() then channel = "PARTY" end
-			-- Switch to raid channel if we're in a raid:
 			if self:IsInRaid() then
-				-- Check if the player is a Raid Leader or Officer
-				local isLeaderOrOfficer = IsRaidLeader() or IsRaidOfficer()
-
 				-- Check for countdown messages
 				local countdownTicPattern = L.ChatCountdownTic:gsub("%%d", "%%d+")
 				local isCountdownMessage = text:find(countdownTicPattern) or text:find(L.ChatCountdownEnd)
 
 				if isCountdownMessage then
-                    -- If it's a countdown message:
-                    if addon.options.countdownSimpleRaidMsg then
-                        channel = "RAID" -- Force RAID if countdownSimpleRaidMsg is true
-                    elseif isLeaderOrOfficer and addon.options.useRaidWarning then -- Only use RW if leader/officer AND useRaidWarning is true
+					-- If it's a countdown message:
+					if addon.options.countdownSimpleRaidMsg then
+						channel = "RAID" -- Force RAID if countdownSimpleRaidMsg is true
+					-- Use RAID_WARNING if leader/officer AND useRaidWarning is true
+					elseif IsRaidLeader() or IsRaidOfficer() and addon.options.useRaidWarning then
 						channel = "RAID_WARNING"
-                    else
-                        channel = "RAID" -- Fallback to RAID
-                    end
+					else
+						channel = "RAID" -- Fallback to RAID
+					end
 				else
-                    -- If it's a non-countdown message:
-                    if isLeaderOrOfficer and addon.options.useRaidWarning then -- Use RAID_WARNING only if leader/officer AND useRaidWarning is true
-                        channel = "RAID_WARNING"
-                    else
-                        channel = "RAID" -- Fallback to RAID
-                    end
+					-- If it's a non-countdown message:
+					-- Use RAID_WARNING only if leader/officer AND useRaidWarning is true
+					if IsRaidLeader() or IsRaidOfficer() and addon.options.useRaidWarning then
+						channel = "RAID_WARNING"
+					else
+						channel = "RAID" -- Fallback to RAID
+					end
 				end
+			elseif self:IsInParty() then
+				channel = "PARTY"
+			else
+				channel = "SAY" -- Default to SAY if not in party or raid
 			end
 		end
 		-- Let's Go!
@@ -1178,16 +1177,9 @@ do
 
 	-- Adds a single roll:
 	function AddRoll(name, roll, itemId)
-		-- Determine if we should check quantity
-		local enforceByItem = itemId ~= nil
-
 		roll = tonumber(roll)
 		rollsCount = rollsCount + 1
-		rollsTable[rollsCount] = {
-            name = name,
-            roll = roll,
-            itemId = itemId,
-		}
+		rollsTable[rollsCount] = {name = name, roll = roll, itemId = itemId}
 
 		-- Track usage per itemId if available
 		if itemId then
@@ -1580,16 +1572,13 @@ do
 	end
 
 	-- Generic roll button:
-	local function AnnounceRoll(rollType, chatKey)
-		if lootCount < 1 then return end
+	local function AnnounceRoll(rollType, chatMsg)
+		if lootCount >= 1 then
 			announced = false
 			currentRollType = rollType
 			addon:ClearRolls()
 			addon:RecordRolls(true)
 			local itemLink = GetItemLink()
-			local itemID = tonumber(string.match(itemLink or "", "item:(%d+)"))
-			itemID = tonumber(itemID)
-			currentRollItem = addon.Raid:GetLootID(itemID)
 			local message = ""
 			if rollType == rollTypes.reserved and addon.Reserves and addon.Reserves.FormatReservedPlayersLine then
 				local srList = addon.Reserves:FormatReservedPlayersLine(itemID)
@@ -1601,15 +1590,21 @@ do
 				end
 			else
 			if itemCount > 1 then
-				local suffix = addon.options.sortAscending and "Low" or "High"
-				message = L[chatKey .. "Multiple" .. suffix]:format(itemLink, itemCount)
+				local suff = addon.options.sortAscending and "Low" or "High"
+				message = L[chatMsg.."Multiple"..suff]:format(itemLink, itemCount)
 			else
-				message = L[chatKey]:format(itemLink)
+				message = L[chatMsg]:format(itemLink)
 			end
 		end
 
 		addon:Announce(message)
-		_G[frameName .. "ItemCount"]:ClearFocus()
+		_G[frameName.."ItemCount"]:ClearFocus()
+
+		-- Prepare current item so we change change
+		-- the loot history details at the trade:
+		local itemID = tonumber(string.match(itemLink or "", "item:(%d+)"))
+		itemID = tonumber(itemID)
+		currentRollItem = addon.Raid:GetLootID(itemID)
 	end
 
 	-- Button: MS Roll
@@ -1629,7 +1624,7 @@ do
 
 	-- Button: Free Roll
 	function Master:BtnFree(btn)
-		return AnnounceRoll(3, "ChatRollFree")
+		return AnnounceRoll(4, "ChatRollFree")
 	end
 
 	-- Button: Countdown/Stop
@@ -2338,8 +2333,8 @@ do
             ClearButton = "ResetSaved",
             QueryButton = "QueryMissingItems",
         }
-        for suffix, method in pairs(buttons) do
-            local btn = _G["KRTReserveListFrame" .. suffix]
+        for suff, method in pairs(buttons) do
+            local btn = _G["KRTReserveListFrame" .. suff]
             if btn and self[method] then
                 btn:SetScript("OnClick", function() self[method](self) end)
             end
@@ -5034,27 +5029,26 @@ do
 	function addon:Log(iID, looter, rollType, rollValue)
 		local raidID = addon.Logger and addon.Logger.selectedRaid
 		if not raidID or not KRT_Raids or not KRT_Raids[raidID] then
-			addon:PrintError("Cannot log loot: Invalid or missing raid.")
 			return
 		end
 
 		local lootList = KRT_Raids[raidID].loot
 		if not lootList or not lootList[iID] then
-			addon:PrintError("Cannot log loot: Entry does not exist at index " .. tostring(iID))
 			return
 		end
 
-		local entry = lootList[iID]
 		if looter and looter ~= "" then
-			entry.looter = looter
+			lootList[iID].looter = looter
+			fetched = false
 		end
 		if tonumber(rollType) ~= nil then
-			entry.rollType = tonumber(rollType)
+			lootList[iID].rollType  = tonumber(rollType)
+			fetched = false
 		end
 		if tonumber(rollValue) ~= nil then
-			entry.rollValue = tonumber(rollValue)
+			lootList[iID].rollValue = tonumber(rollValue)
+			fetched = false
 		end
-		fetched = false
 	end
 end
 
@@ -5379,7 +5373,7 @@ do
 				else
 					addon:Print(format(L.StrCmdCommands, "krt res"), "KRT")
 					print(helpString:format("toggle", L.StrCmdToggle))
-					print(helpString:format("import", L.StrCmdReservesImport)) -- Assumi che ci sia un L.StrCmdReservesImport
+					print(helpString:format("import", L.StrCmdReservesImport))
 				end
 
 			-- LFM Commands!
