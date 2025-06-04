@@ -821,6 +821,10 @@ do
 	-- Function used for various announcements:
 	function addon:Announce(text, channel)
 		if not channel then
+			channel = channel or "SAY"
+			-- Switch to party mode if we're in a party:
+			if self:IsInParty() then channel = "PARTY" end
+			-- Switch to raid channel if we're in a raid:
 			if self:IsInRaid() then
 				-- Check for countdown messages
 				local countdownTicPattern = L.ChatCountdownTic:gsub("%%d", "%%d+")
@@ -845,10 +849,6 @@ do
 						channel = "RAID" -- Fallback to RAID
 					end
 				end
-			elseif self:IsInParty() then
-				channel = "PARTY"
-			else
-				channel = "SAY" -- Default to SAY if not in party or raid
 			end
 		end
 		-- Let's Go!
@@ -1588,23 +1588,24 @@ do
 				else
 					message = L.ChatRollSR:format(srList, itemLink)
 				end
-			else
-			if itemCount > 1 then
-				local suff = addon.options.sortAscending and "Low" or "High"
-				message = L[chatMsg.."Multiple"..suff]:format(itemLink, itemCount)
-			else
-				message = L[chatMsg]:format(itemLink)
-			end
+			else -- This 'else' belongs to the 'if rollType == rollTypes.reserved'
+				if itemCount > 1 then
+					local suff = addon.options.sortAscending and "Low" or "High"
+					message = L[chatMsg.."Multiple"..suff]:format(itemLink, itemCount)
+				else
+					message = L[chatMsg]:format(itemLink)
+				end
+			end -- This 'end' was missing
+			
+			addon:Announce(message)
+			_G[frameName.."ItemCount"]:ClearFocus()
+
+			-- Prepare current item so we change change
+			-- the loot history details at the trade:
+			local itemID = tonumber(string.match(itemLink or "", "item:(%d+)"))
+			itemID = tonumber(itemID)
+			currentRollItem = addon.Raid:GetLootID(itemID)
 		end
-
-		addon:Announce(message)
-		_G[frameName.."ItemCount"]:ClearFocus()
-
-		-- Prepare current item so we change change
-		-- the loot history details at the trade:
-		local itemID = tonumber(string.match(itemLink or "", "item:(%d+)"))
-		itemID = tonumber(itemID)
-		currentRollItem = addon.Raid:GetLootID(itemID)
 	end
 
 	-- Button: MS Roll
